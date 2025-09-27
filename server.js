@@ -125,7 +125,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { pool } from "./db.js";
 import authRoutes from "./routes/auth.js";
 
