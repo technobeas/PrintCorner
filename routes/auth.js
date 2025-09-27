@@ -144,6 +144,7 @@ router.post("/logout", (req, res) => {
 
 // ME (session info)
 router.get("/me", (req, res) => {
+  console.log("Session user:", req.session.user);
   if (!req.session.user) return res.json({ user: null });
   return res.json({ user: req.session.user });
 });
