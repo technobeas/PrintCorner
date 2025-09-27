@@ -425,9 +425,8 @@ app.use(
     store: sessionStore,
     cookie: {
       httpOnly: true,
-      sameSite: "lax",
-      secure: true, // only if HTTPS
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "none", // ✅ Cross-origin needs this
+      secure: true, // ✅ Required for sameSite: "none"
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
