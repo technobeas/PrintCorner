@@ -408,14 +408,13 @@ const sessionStore = new MySQLStore({}, pool);
 
 app.use(
   cors({
-    origin: "https://printcorner.onrender.com",
+    origin: ["http://localhost:3000", "https://printcorner.onrender.com"],
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(
   session({
     name: "sid",
@@ -425,9 +424,9 @@ app.use(
     store: sessionStore,
     cookie: {
       httpOnly: true,
-      sameSite: "none", // ✅ Cross-origin needs this
-      secure: true, // ✅ Required for sameSite: "none"
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production", // only true in HTTPS
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 );
