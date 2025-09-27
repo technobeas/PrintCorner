@@ -380,7 +380,7 @@
         async function fetchCustomers() {
           try {
             const res = await fetch(
-              `http://${window.location.hostname}:3000/api/customers/view`,
+              `https://${window.location.hostname}:3000/api/customers/view`,
               {
                 credentials: "include",
               }
@@ -472,7 +472,7 @@
 
                 try {
                   const res = await fetch(
-                    `http://${window.location.hostname}:3000/api/customers/${id}`,
+                    `https://${window.location.hostname}:3000/api/customers/${id}`,
                     {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
@@ -521,7 +521,7 @@
           
           try {
             const res = await fetch(
-              `http://${window.location.hostname}:3000/api/customers/${id}`,
+              `https://${window.location.hostname}:3000/api/customers/${id}`,
               {
                 method: "DELETE",
                 credentials: "include",

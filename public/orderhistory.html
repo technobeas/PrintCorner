@@ -305,7 +305,7 @@
         }
 
         const url = new URL(
-          `http://${window.location.hostname}:3000/api/orders`
+          `https://${window.location.hostname}:3000/api/orders`
         );
 
         if (mobile) url.searchParams.append("mobile", mobile);
@@ -403,7 +403,7 @@
       async function printBill(orderId) {
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/orders/${orderId}`,
+            `https://${window.location.hostname}:3000/api/orders/${orderId}`,
             { credentials: "include" }
           );
           if (!res.ok) throw new Error("Order not found");

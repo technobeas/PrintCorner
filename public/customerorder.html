@@ -586,7 +586,7 @@
 
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/customers/search?${queryParam}`,
+            `https://${window.location.hostname}:3000/api/customers/search?${queryParam}`,
             {
               credentials: "include",
             }
@@ -679,7 +679,7 @@
 
         try {
           const res = await fetch(
-            `http://${
+            `https://${
               window.location.hostname
             }:3000/api/customers?mobile=${encodeURIComponent(mobile)}`,
             {
@@ -707,7 +707,7 @@
         const q = document.getElementById("productSearch").value.toLowerCase();
         if (!q) return;
         const res = await fetch(
-          `http://${window.location.hostname}:3000/api/products?q=${q}`,
+          `https://${window.location.hostname}:3000/api/products?q=${q}`,
           {
             credentials: "include",
           }
@@ -1071,7 +1071,7 @@
 
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/orders`,
+            `https://${window.location.hostname}:3000/api/orders`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

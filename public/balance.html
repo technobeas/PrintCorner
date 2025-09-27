@@ -425,7 +425,7 @@
       async function processPayment(customerId, amount, rowElement) {
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/orders/pay`,
+            `https://${window.location.hostname}:3000/api/orders/pay`,
             {
               method: "POST",
               credentials: "include",
@@ -466,7 +466,7 @@
       async function openPrintView(customerId, customerName) {
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/orders/with-balance/${customerId}`,
+            `https://${window.location.hostname}:3000/api/orders/with-balance/${customerId}`,
             { credentials: "include" }
           );
           const data = await res.json();
@@ -577,7 +577,7 @@
       async function fetchCustomers() {
         try {
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/orders/customers-with-balance`,
+            `https://${window.location.hostname}:3000/api/orders/customers-with-balance`,
             { credentials: "include" }
           );
           const data = await res.json();

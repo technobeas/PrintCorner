@@ -522,7 +522,7 @@
         try {
           statusMsg.textContent = "Loading products...";
           const res = await fetch(
-            `http://${window.location.hostname}:3000/api/products/all`,
+            `https://${window.location.hostname}:3000/api/products/all`,
             {
               credentials: "include",
             }
@@ -621,7 +621,7 @@
               updateData[field] = newValue;
 
               const response = await fetch(
-                `http://${window.location.hostname}:3000/api/products/${id}`,
+                `https://${window.location.hostname}:3000/api/products/${id}`,
                 {
                   method: "PATCH",
                   headers: {
@@ -717,7 +717,7 @@
           );
 
           const response = await fetch(
-            `http://${window.location.hostname}:3000/api/products/bulk-delete`,
+            `https://${window.location.hostname}:3000/api/products/bulk-delete`,
             {
               method: "DELETE",
               headers: {
