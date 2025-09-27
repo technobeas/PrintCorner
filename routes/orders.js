@@ -135,61 +135,126 @@ router.get("/", requireAdmin, async (req, res) => {
   }
 });
 
+// router.get("/customers-with-balance", async (req, res) => {
+//   try {
+//     const sql = `
+//  SELECT
+//   c.id AS customerId,
+//   c.name AS customerName,
+//   c.mobile AS customerMobile,
+//   latest_order.orderId,
+//   latest_order.orderDate,
+//   latest_order.last_message_sent,
+//   totals.balance,
+//   totals.totalAmount,
+//   order_dates.orderStart,
+//   order_dates.orderEnd
+// FROM customers c
+// LEFT JOIN (
+//   SELECT
+//     o.customer_id,
+//     SUM(o.balance) AS balance,
+//     SUM(o.total_amount) AS totalAmount
+//   FROM orders o
+//   WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
+//   GROUP BY o.customer_id
+// ) AS totals ON c.id = totals.customer_id
+// LEFT JOIN (
+//   SELECT *
+//   FROM (
+//     SELECT
+//       o1.id AS orderId,
+//       o1.customer_id,
+//       o1.order_date AS orderDate,
+//       o1.last_message_sent,
+//       ROW_NUMBER() OVER (
+//         PARTITION BY o1.customer_id
+//         ORDER BY o1.order_date DESC, o1.id DESC
+//       ) AS rn
+//     FROM orders o1
+//     WHERE o1.balance > 0 AND (o1.paid IS NULL OR o1.paid = 0)
+//   ) ranked
+//   WHERE rn = 1
+// ) AS latest_order ON c.id = latest_order.customer_id
+// LEFT JOIN (
+//   SELECT
+//     o.customer_id,
+//     MIN(o.order_date) AS orderStart,
+//     MAX(o.order_date) AS orderEnd
+//   FROM orders o
+//   WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
+//   GROUP BY o.customer_id
+// ) AS order_dates ON c.id = order_dates.customer_id
+// WHERE totals.balance IS NOT NULL;
+// `;
+
+//     const [rows] = await pool.query(sql);
+//     // res.json(rows);
+//     res.json({ success: true, customers: rows });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Database error" });
+//   }
+// });
+
 router.get("/customers-with-balance", async (req, res) => {
   try {
     const sql = `
- SELECT
-  c.id AS customerId,
-  c.name AS customerName,
-  c.mobile AS customerMobile,
-  latest_order.orderId,
-  latest_order.orderDate,
-  latest_order.last_message_sent,
-  totals.balance,
-  totals.totalAmount,
-  order_dates.orderStart,
-  order_dates.orderEnd
-FROM customers c
-LEFT JOIN (
-  SELECT
-    o.customer_id,
-    SUM(o.balance) AS balance,
-    SUM(o.total_amount) AS totalAmount
-  FROM orders o
-  WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
-  GROUP BY o.customer_id
-) AS totals ON c.id = totals.customer_id
-LEFT JOIN (
-  SELECT *
-  FROM (
-    SELECT
-      o1.id AS orderId,
-      o1.customer_id,
-      o1.order_date AS orderDate,
-      o1.last_message_sent,
-      ROW_NUMBER() OVER (
-        PARTITION BY o1.customer_id
-        ORDER BY o1.order_date DESC, o1.id DESC
-      ) AS rn
-    FROM orders o1
-    WHERE o1.balance > 0 AND (o1.paid IS NULL OR o1.paid = 0)
-  ) ranked
-  WHERE rn = 1
-) AS latest_order ON c.id = latest_order.customer_id
-LEFT JOIN (
-  SELECT
-    o.customer_id,
-    MIN(o.order_date) AS orderStart,
-    MAX(o.order_date) AS orderEnd
-  FROM orders o
-  WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
-  GROUP BY o.customer_id
-) AS order_dates ON c.id = order_dates.customer_id
-WHERE totals.balance IS NOT NULL;
-`;
+      SELECT
+        c.id AS customerId,
+        c.name AS customerName,
+        c.mobile AS customerMobile,
+        latest_order.orderId,
+        latest_order.orderDate,
+        latest_order.last_message_sent,
+        totals.balance,
+        totals.totalAmount,
+        order_dates.orderStart,
+        order_dates.orderEnd
+      FROM customers c
+      LEFT JOIN (
+        SELECT
+          o.customer_id,
+          SUM(o.balance) AS balance,
+          SUM(o.total_amount) AS totalAmount
+        FROM orders o
+        WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
+        GROUP BY o.customer_id
+      ) AS totals ON c.id = totals.customer_id
+      LEFT JOIN (
+        SELECT o1.id AS orderId, o1.customer_id, o1.order_date AS orderDate, o1.last_message_sent
+        FROM orders o1
+        INNER JOIN (
+          SELECT customer_id, MAX(order_date) AS max_order_date
+          FROM orders
+          WHERE balance > 0 AND (paid IS NULL OR paid = 0)
+          GROUP BY customer_id
+        ) AS max_dates
+          ON o1.customer_id = max_dates.customer_id
+          AND o1.order_date = max_dates.max_order_date
+        INNER JOIN (
+          SELECT customer_id, order_date, MAX(id) AS max_id
+          FROM orders
+          WHERE balance > 0 AND (paid IS NULL OR paid = 0)
+          GROUP BY customer_id, order_date
+        ) AS max_ids
+          ON o1.customer_id = max_ids.customer_id
+          AND o1.order_date = max_ids.order_date
+          AND o1.id = max_ids.max_id
+      ) AS latest_order ON c.id = latest_order.customer_id
+      LEFT JOIN (
+        SELECT
+          o.customer_id,
+          MIN(o.order_date) AS orderStart,
+          MAX(o.order_date) AS orderEnd
+        FROM orders o
+        WHERE o.balance > 0 AND (o.paid IS NULL OR o.paid = 0)
+        GROUP BY o.customer_id
+      ) AS order_dates ON c.id = order_dates.customer_id
+      WHERE totals.balance IS NOT NULL;
+    `;
 
     const [rows] = await pool.query(sql);
-    // res.json(rows);
     res.json({ success: true, customers: rows });
   } catch (error) {
     console.error(error);
