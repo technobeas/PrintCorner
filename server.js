@@ -399,9 +399,16 @@ const MySQLStore = mysqlSession(session);
 const sessionStore = new MySQLStore({}, pool);
 
 // CORS setup — allow all origins dynamically, credentials enabled
+// app.use(
+//   cors({
+//     origin: (origin, callback) => callback(null, true),
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
-    origin: (origin, callback) => callback(null, true),
+    origin: "https://printcorner.onrender.com",
     credentials: true,
   })
 );
@@ -419,6 +426,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
+      secure: true, // only if HTTPS
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
