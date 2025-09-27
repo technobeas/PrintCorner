@@ -395,7 +395,7 @@
     <div class="container">
       <h2>Customer Order Entry</h2>
 
-     <div class="flex">
+      <div class="flex">
         <div>
           <label>Search Customer</label>
           <input
@@ -554,7 +554,9 @@
       // Check User Role, if Admin allow item.rate and totalAmount Editing
       async function checkUserRole() {
         try {
-          const response = await fetch("/api/me");
+          const response = await fetch(
+            `https://${window.location.hostname}:3000/api/me`
+          );
           const data = await response.json();
           const user = data.user;
           if (user && user.role === "admin") {
@@ -571,7 +573,7 @@
 
       checkUserRole();
 
-	async function autocompleteCustomer() {
+      async function autocompleteCustomer() {
         const input = document.getElementById("customerSearch").value.trim();
         const suggestionBox = document.getElementById("customerSuggestions");
 
@@ -1058,8 +1060,10 @@
         }
 
         // New Logic Below
-        if (customerPhone && customerName === "N/A" || customerPhone && customerName === "")
-        {
+        if (
+          (customerPhone && customerName === "N/A") ||
+          (customerPhone && customerName === "")
+        ) {
           showToast("Add Customer Name");
           return false;
         }
