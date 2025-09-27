@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="card">
+      <h1>User Dashboard</h1>
+      <p class="helper">You are logged in as user.</p>
+      <div id="content" class="grid" style="margin-top: 16px">
+        <div class="box">
+          <strong>Name</strong>
+          <div id="name">-</div>
+        </div>
+        <div class="box">
+          <strong>Email</strong>
+          <div id="email">-</div>
+        </div>
+        <div class="box">
+          <strong>Role</strong>
+          <div id="role">-</div>
+        </div>
+      </div>
+      <button
+        class="secondary"
+        onclick="logout()"
+        style="margin-top: 16px; width: auto"
+      >
+        Logout
+      </button>
+    </div>
+
+    <div class="card-links">
+      <a class="card-link" href="/customerorder.html">
+        <i class="fas fa-cart-plus"></i> Add Order
+      </a>
+      <a class="card-link" href="/addcustomers.html">
+        <i class="fas fa-user-plus"></i> Add Customer
+      </a>
+      <a class="card-link" href="/balance.html">
+        <i class="fas fa-wallet"></i> Pending Amount
+      </a>
+    </div>
+
+    <script src="/shared.js"></script>
+    <script>
+      (async () => {
+        const user = await getMe();
+        if (!user) return (window.location.href = "/index.html");
+        if (user.role === "admin")
+          return (window.location.href = "/admin.html");
+        document.getElementById("name").textContent = user.name;
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("role").textContent = user.role;
+      })();
+    </script>
+  </body>
+</html>

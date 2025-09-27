@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Expense Tracker</title>
+    <style>
+          * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #eef2f7;
+        margin: 0;
+        padding: 16px;
+        color: #333;
+      }
+
+      .container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 16px;
+        color: #1a1a1a;
+        font-size: 1.2rem;
+      }
+
+      form,
+      .filter-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 15px;
+        border: 1.5px solid #ccc;
+        border-radius: 8px;
+        background: #f9fafb;
+        transition: border-color 0.25s ease, background-color 0.25s ease;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #4a90e2;
+        background: #fff;
+        box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+        outline: none;
+      }
+
+      button,
+      #filterBtn {
+        background: #4a90e2;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.15s ease;
+      }
+
+      button:hover,
+      #filterBtn:hover {
+        background: #357ab7;
+        transform: translateY(-2px);
+      }
+
+      .full-width {
+        width: 100%;
+      }
+
+      table {
+        width: 100%;
+        font-size: 14px;
+        border-collapse: collapse;
+        margin-top: 16px;
+        overflow-x: auto;
+        display: block;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #e1e7f0;
+        white-space: nowrap;
+      }
+
+      th {
+        background: #f4f7fb;
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        color: #4a4a4a;
+      }
+
+      tbody tr:hover {
+        background-color: #eaf2fe;
+        transition: background-color 0.25s ease;
+      }
+
+      .delete-btn {
+        background: #e74c3c;
+        color: white;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.15s ease;
+      }
+
+      .delete-btn:hover {
+        background: #c0392b;
+        transform: scale(1.05);
+      }
+
+      .total {
+        font-weight: 700;
+        font-size: 16px;
+        text-align: right;
+        margin-top: 10px;
+        color: #222;
+      }
+
+      #totalProfit {
+        color: #e60000;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: #fff;
+        padding: 14px 24px;
+        border-radius: 6px;
+        font-size: 15px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+        z-index: 1000;
+        max-width: 90%;
+        text-align: center;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      }
+
+      .toast.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal {
+        display: none; 
+        position: fixed;
+        z-index: 1100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+        backdrop-filter: blur(2px);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 15% auto;
+        padding: 24px 30px;
+        border-radius: 10px;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      }
+
+      .modal-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .btn {
+        padding: 10px 22px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-yes {
+        background-color: #e74c3c;
+        color: white;
+      }
+
+      .btn-yes:hover {
+        background-color: #c0392b;
+      }
+
+      .btn-no {
+        background-color: #ccc;
+        color: #333;
+      }
+
+      .btn-no:hover {
+        background-color: #999;
+        color: #fff;
+      }
+
+      @media (min-width: 600px) {
+        .container {
+          max-width: 720px;
+          margin: 30px auto;
+          padding: 30px 35px;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+        }
+
+        form,
+        .filter-container {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        input,
+        select,
+        button,
+        #filterBtn {
+          flex: 1;
+        }
+
+        .full-width {
+          flex: 0 0 100%;
+        }
+
+        table {
+          display: table;
+          font-size: 15px;
+        }
+
+        .delete-btn {
+          font-size: 14px;
+        }
+      }
+      </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Add Expense</h2>
+
+      <form id="expenseForm">
+        <input type="date" id="date" required />
+        <select id="category" required>
+          <option value="" disabled selected>Select Category</option>
+          <option>Wages</option>
+          <option>Transport</option>
+          <option>Utilities</option>
+          <option>Raw Material</option>
+          <option>Others</option>
+        </select>
+        <input
+          type="text"
+          id="description"
+          placeholder="Description"
+          required
+        />
+        <input
+          type="number"
+          id="amount"
+          placeholder="Amount"
+          min="0.01"
+          step="0.01"
+          required
+        />
+       
+    <button type="submit" class="full-width">Add Expense</button>
+  
+      </form>
+    </div>
+
+    <div class="container">
+       <h2>Filter by Date Range</h2>
+      <div class="filter-container">
+        <label>Start Date:<input type="date" id="startDate" /></label>
+        <label>End Date:<input type="date" id="endDate" /></label>
+        <button id="filterBtn" class="full-width">Filter</button>
+      </div>
+      <div class="total" id="totalEarnings">Sales Amount: ₹0.00</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount (₹)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="expenseTableBody">
+        </tbody>
+      </table>
+
+    <div class="total" id="totalAmount">Total Expenses: ₹0.00</div>
+    <div class="total" id="totalProfit">Revenue: ₹0.00</div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="confirmModal" class="modal">
+  <div class="modal-content">
+    <p id="confirmMessage">Are you sure?</p>
+    <div class="modal-buttons">
+      <button id="confirmYes" class="btn btn-yes">Yes</button>
+      <button id="confirmNo" class="btn btn-no">No</button>
+    </div>
+  </div>
+</div>
+
+    <script>
+      const expenseForm = document.getElementById("expenseForm");
+      const expenseTableBody = document.getElementById("expenseTableBody");
+      const totalAmount = document.getElementById("totalAmount");
+      const startDateInput = document.getElementById("startDate");
+      const endDateInput = document.getElementById("endDate");
+      const filterBtn = document.getElementById("filterBtn");
+      const totalEarningsDiv = document.getElementById("totalEarnings");
+      const totalProfit = document.getElementById("totalProfit");
+      document.getElementById("date").valueAsDate = new Date();
+
+
+      let expenses = [];
+
+      function formatDate(dateStr) {
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return new Date(dateStr).toLocaleDateString(undefined, options);
+      }
+
+      function showToast(message, duration = 3000) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toast.hideTimeout);
+  toast.hideTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, duration);
+}
+
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("confirmModal");
+    const msgElem = document.getElementById("confirmMessage");
+    const yesBtn = document.getElementById("confirmYes");
+    const noBtn = document.getElementById("confirmNo");
+
+    msgElem.textContent = message;
+    modal.style.display = "block";
+
+    function cleanup() {
+      yesBtn.removeEventListener("click", onYes);
+      noBtn.removeEventListener("click", onNo);
+      modal.style.display = "none";
+    }
+
+    function onYes() {
+      cleanup();
+      resolve(true);
+    }
+
+    function onNo() {
+      cleanup();
+      resolve(false);
+    }
+
+    yesBtn.addEventListener("click", onYes);
+    noBtn.addEventListener("click", onNo);
+  });
+}
+
+      function updateTotal() {
+        const total = expenses.reduce(
+          (sum, exp) => sum + Number(exp.amount),
+          0
+        );
+        totalAmount.textContent = `Total Expenses: ₹${total.toFixed(2)}`;
+      }
+
+      function updateProfit(earningsTotal) {
+  const expensesTotal = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  const profit = earningsTotal - expensesTotal;
+  totalProfit.textContent = `Revenue: ₹${profit.toFixed(2)}`;
+}
+
+      function renderExpenses() {
+        expenseTableBody.innerHTML = "";
+        expenses.forEach((expense, index) => {
+          const tr = document.createElement("tr");
+            tr.innerHTML = `
+        <td>${formatDate(expense.date)}</td>
+        <td>${expense.category}</td>
+        <td>${expense.description}</td>
+        <td>₹${Number(expense.amount).toFixed(2)}</td>
+        <td><button class="delete-btn" data-id="${expense.id}">Delete</button></td>
+      `;
+
+          expenseTableBody.appendChild(tr);
+        });
+        updateTotal();
+      }
+
+      // Fetch expenses and earnings in date range
+      async function fetchExpensesAndEarnings(start, end) {
+        try {
+          // Fetch expenses
+          const expensesRes = await fetch(
+            `http://${window.location.hostname}:3000/api/expenses?start=${start}&end=${end}` ,
+            {
+              credentials: "include",
+            }
+          );
+          if (!expensesRes.ok) throw new Error("Failed to fetch expenses");
+          expenses = await expensesRes.json();
+
+          renderExpenses();
+
+          // Fetch total earnings
+          const earningsRes = await fetch(
+            `http://${window.location.hostname}:3000/api/expenses/orders/total?start=${start}&end=${end}` ,
+            {
+              credentials: "include",
+            }
+          );
+          if (!earningsRes.ok) throw new Error("Failed to fetch earnings");
+          const earningsData = await earningsRes.json();
+          const earningsTotal = parseFloat(earningsData.total);
+          totalEarningsDiv.textContent = `Sales Amount: ₹${earningsTotal.toFixed(2)}`;
+    updateProfit(earningsTotal);
+        } catch (err) {
+          showToast(err.message);
+          console.error(err);
+        }
+      }
+
+      filterBtn.addEventListener("click", () => {
+        const start = startDateInput.value;
+        const end = endDateInput.value;
+
+        if (!start || !end) {
+          showToast("Please select both start and end dates.");
+          return;
+        }
+        if (start > end) {
+          showToast("Start date cannot be after end date.");
+          return;
+        }
+
+        fetchExpensesAndEarnings(start, end);
+      });
+
+      expenseForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const date = expenseForm.date.value;
+        const category = expenseForm.category.value;
+        const description = expenseForm.description.value.trim();
+        const amount = parseFloat(expenseForm.amount.value);
+
+        if (
+          !date ||
+          !category ||
+          !description ||
+          isNaN(amount) ||
+          amount <= 0
+        ) {
+          showToast("Please fill all fields correctly.");
+          return;
+        }
+
+        try {
+          const response = await fetch(`http://${window.location.hostname}:3000/api/expenses`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ date, category, description, amount }),
+          });
+
+          const result = await response.json();
+          if (!response.ok) {
+            showToast(result.error || "Failed to save expense");
+            return;
+          }
+
+          showToast("Expense saved successfully!");
+
+          if (startDateInput.value && endDateInput.value) {
+            fetchExpensesAndEarnings(startDateInput.value, endDateInput.value);
+          } else {
+            // Or just add to local array and render (optional)
+            expenses.push({ date, category, description, amount });
+            renderExpenses();
+          }
+          expenseForm.reset();
+          document.getElementById("date").valueAsDate = new Date();
+        } catch (error) {
+          showToast("Error saving expense");
+          console.error(error);
+        }
+      });
+
+    expenseTableBody.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("delete-btn")) {
+    const id = e.target.getAttribute("data-id");
+
+    if (!id) {
+      showToast("Expense ID not found");
+      return;
+    }
+
+    const confirmed = await showConfirm("Are you sure you want to delete this expense?");
+if (!confirmed) {
+  return;
+}
+
+    try {
+      const response = await fetch(`http://${window.location.hostname}:3000/api/expenses/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        showToast(result.error || "Failed to delete expense");
+        return;
+      }
+
+      expenses = expenses.filter(exp => exp.id !== Number(id));
+
+      renderExpenses();
+    } catch (error) {
+      showToast("Error deleting expense");
+      console.error(error);
+    }
+  }
+});
+
+      renderExpenses();
+    </script>
+    </body>
+</html>

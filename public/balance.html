@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pending Balances</title>
+    <style>
+      :root {
+        --color-primary: #ff6b6b;
+        --color-primary-hover: #e55a5a;
+        --color-bg: #fff;
+        --color-text: #222;
+        --color-text-secondary: #666;
+        --color-border: #ddd;
+        --color-shadow: rgba(0, 0, 0, 0.1);
+        --border-radius: 12px;
+        --transition-speed: 0.3s;
+        --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --button-shadow: rgba(0, 0, 0, 0.12);
+      }
+
+      body {
+        background-color: #f5f7fa;
+        font-family: var(--font-family);
+        margin: 0;
+        padding: 2rem;
+        color: var(--color-text);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .main-container {
+        max-width: 1100px;
+        background: var(--color-bg);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        width: 100%;
+        box-shadow: 0 10px 20px var(--color-shadow);
+      }
+
+      h2 {
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+        color: var(--color-text);
+        letter-spacing: 0.02em;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 14px 18px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        color: var(--color-text);
+        background-color: var(--color-bg);
+        box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.05);
+        transition: border-color var(--transition-speed) ease,
+          box-shadow var(--transition-speed) ease;
+        margin-bottom: 1.5rem;
+        outline-offset: 3px;
+        box-sizing: border-box;
+      }
+
+      input[type="text"]::placeholder {
+        color: var(--color-text-secondary);
+        font-style: italic;
+      }
+
+      input[type="text"]:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        outline: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        font-size: 1rem;
+        background-color: var(--color-bg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        margin-top: 1rem;
+      }
+
+      thead {
+        background-color: #fafafa;
+        border-radius: var(--border-radius);
+        box-shadow: inset 0 -1px 0 #e0e0e0;
+      }
+
+      thead th {
+        padding: 18px 22px;
+        font-weight: 700;
+        color: var(--color-text-secondary);
+        border-bottom: none;
+        text-align: left;
+        letter-spacing: 0.02em;
+        user-select: none;
+      }
+
+      tbody tr {
+        background-color: var(--color-bg);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        transition: background-color 0.3s ease, transform 0.3s ease,
+          box-shadow 0.3s ease;
+        border-radius: var(--border-radius);
+        cursor: default;
+      }
+
+      tbody tr:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        background-color: #f9fbff;
+      }
+
+      tbody td {
+        padding: 16px 22px;
+        color: var(--color-text);
+        vertical-align: middle;
+        max-width: 240px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      tbody td:last-child {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-start;
+        align-items: center;
+        white-space: nowrap;
+      }
+
+      input[type="number"] {
+        width: 110px;
+        padding: 8px 12px;
+        border: 1.5px solid var(--color-border);
+        border-radius: var(--border-radius);
+        font-size: 0.95rem;
+        color: var(--color-text);
+        transition: border-color var(--transition-speed) ease,
+          box-shadow var(--transition-speed) ease;
+        outline-offset: 2px;
+      }
+
+      input[type="number"]:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+        outline: none;
+      }
+
+      button {
+        padding: 9px 20px;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        font-size: 0.95rem;
+        transition: background-color var(--transition-speed) ease,
+          box-shadow 0.2s ease;
+        box-shadow: 0 2px 8px var(--button-shadow);
+        user-select: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button:active {
+        transform: scale(0.98);
+        box-shadow: 0 1px 5px var(--button-shadow);
+      }
+
+      button.payNowBtn {
+        background-color: var(--color-primary);
+        color: #fff;
+      }
+
+      button.payNowBtn:hover {
+        background-color: var(--color-primary-hover);
+        box-shadow: 0 4px 14px rgba(255, 107, 107, 0.5);
+      }
+
+      button.printBtn {
+        background-color: #4a90e2;
+        color: #fff;
+      }
+
+      button.printBtn:hover {
+        background-color: #3a78c2;
+        box-shadow: 0 4px 14px rgba(74, 144, 226, 0.5);
+      }
+
+      .toast {
+        visibility: hidden;
+        min-width: 260px;
+        max-width: 80vw;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 16px 24px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        bottom: 30px;
+        font-size: 1.1rem;
+        opacity: 0;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .toast.show {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .action-flex {
+        display: flex;
+        flex-direction: column;
+      }
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+          align-items: stretch;
+        }
+
+        .main-container {
+          width: 100%;
+          padding: 1.5rem;
+          box-shadow: none;
+          border-radius: 0;
+          background: #fff;
+        }
+
+        h2 {
+          font-size: 1.4rem;
+          text-align: center;
+          margin-bottom: 1.2rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+          width: 100% !important;
+          font-size: 1rem;
+          padding: 12px 16px;
+          min-height: 44px;
+          border-radius: 10px;
+          box-sizing: border-box;
+          border: 1px solid #ccc;
+        }
+
+        .order-header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .order-header > div {
+          width: 100%;
+        }
+
+        table {
+          display: block;
+          width: 100%;
+          overflow-x: auto;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tbody {
+          display: block;
+          width: 100%;
+        }
+
+        tbody tr {
+          display: flex;
+          flex-direction: column;
+          padding: 1.25rem 1rem;
+          margin-bottom: 1.5rem;
+          background: #ffffff;
+          border-radius: 14px;
+          box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+          gap: 0.75rem;
+        }
+
+        tbody td {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          padding: 0.5rem 0;
+          border: none;
+          position: relative;
+          word-break: break-word;
+          flex-wrap: wrap;
+        }
+
+        tbody td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: #666;
+          flex: 0 0 40%;
+          max-width: 40%;
+          text-align: left;
+          font-size: 0.9rem;
+        }
+
+        tbody td:last-child {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+          padding-top: 0.75rem;
+        }
+
+        .action-flex {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          gap: 1rem;
+        }
+
+        .action-flex .pay {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .action-flex input[type="number"] {
+          width: 100%;
+          font-size: 1rem;
+          padding: 12px 14px;
+        }
+
+        .action-flex button {
+          width: 100%;
+          font-size: 1rem;
+          padding: 12px;
+          border-radius: 10px;
+        }
+
+        button {
+          width: 100%;
+          padding: 12px;
+          font-size: 1rem;
+          border-radius: 10px;
+        }
+
+        .items-table {
+          overflow-x: auto;
+          display: block;
+          font-size: 0.95rem;
+        }
+
+        .total-balance {
+          font-size: 1.15rem;
+          text-align: left;
+          margin-top: 1.5rem;
+          font-weight: bold;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <h2>Customers with Pending Balances</h2>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by customer name..."
+        onkeyup="filterTable()"
+      />
+      <table id="balanceTable">
+        <thead>
+          <tr>
+            <th>Customer Name</th>
+            <th>Balance (₹)</th>
+            <th>Order Start</th>
+            <th>Order End</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+      function showToast(message, duration = 3000) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), duration);
+      }
+
+      function filterTable() {
+        const input = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const rows = document.querySelectorAll("#balanceTable tbody tr");
+        rows.forEach((row) => {
+          const name = row
+            .querySelector("td:first-child")
+            .textContent.toLowerCase();
+          row.style.display = name.includes(input) ? "" : "none";
+        });
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return "N/A";
+        const d = new Date(dateStr);
+        if (isNaN(d)) return "N/A";
+        return d.toLocaleDateString("en-IN");
+      }
+
+      async function processPayment(customerId, amount, rowElement) {
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/orders/pay`,
+            {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ customerId, amount }),
+            }
+          );
+          const data = await res.json();
+
+          if (data.success) {
+            // Update the balance shown in UI
+            const balanceCell = rowElement.querySelector(".balance");
+            balanceCell.textContent = `₹${parseFloat(data.newBalance).toFixed(
+              2
+            )}`;
+
+            showToast(
+              `Payment of ₹${amount.toFixed(2)} processed successfully.`
+            );
+
+            // Clear input field
+            const input = rowElement.querySelector('input[type="number"]');
+            input.value = "";
+
+            // Remove row if balance is zero or less
+            if (data.newBalance <= 0) {
+              rowElement.remove();
+            }
+          } else {
+            showToast(data.error || "Payment failed");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Server error during payment");
+        }
+      }
+
+      async function openPrintView(customerId, customerName) {
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/orders/with-balance/${customerId}`,
+            { credentials: "include" }
+          );
+          const data = await res.json();
+
+          if (!data.success || !data.orders || data.orders.length === 0) {
+            showToast("No unpaid orders found for this customer.");
+            return;
+          }
+
+          const orders = data.orders;
+          let totalBalance = 0;
+
+          function buildItemsTable(items) {
+            let itemsHtml = `
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Rate (₹)</th>
+              <th>Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+            items.forEach((item) => {
+              const amount = item.quantity * item.rate;
+              itemsHtml += `
+          <tr>
+            <td>${item.product_name}</td>
+            <td>${item.quantity}</td>
+            <td>₹${parseFloat(item.rate).toFixed(2)}</td>
+            <td>₹${amount.toFixed(2)}</td>
+          </tr>
+        `;
+            });
+
+            itemsHtml += `</tbody></table>`;
+            return itemsHtml;
+          }
+
+          let ordersHtml = "";
+
+          orders.forEach((order) => {
+            totalBalance += parseFloat(order.balance);
+            const orderDate = new Date(order.order_date).toLocaleDateString();
+
+            ordersHtml += `
+        <div class="order-card">
+          <div class="order-header">
+            <div><strong>Order ID:</strong> ${order.orderId}</div>
+            <div><strong>Order Date:</strong> ${orderDate}</div>
+           <div><strong>GST Amount:</strong> ₹${parseFloat(
+             order.gst_amount || 0
+           ).toFixed(2)}</div>
+            <div><strong>Total Amount:</strong> ₹${parseFloat(
+              order.payable
+            ).toFixed(2)}</div>
+            <div><strong>Balance:</strong> ₹${parseFloat(order.balance).toFixed(
+              2
+            )}</div>
+          </div>
+
+          ${buildItemsTable(order.items)}
+        </div>
+      `;
+          });
+
+          const html = `
+      <html>
+        <head>
+          <title>Orders with Balance - ${customerName}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+            h2 { text-align: center; margin-bottom: 30px; }
+            .order-card { border: 1px solid #ccc; border-radius: 6px; padding: 15px; margin-bottom: 25px; }
+            .order-header { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 15px; background: #f7f7f7; padding: 10px; border-radius: 4px; }
+            .order-header div { margin: 5px 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+            th { background-color: #f2f2f2; }
+            tbody tr:nth-child(even) { background-color: #fafafa; }
+            .total-balance { font-weight: bold; font-size: 1.3em; text-align: right; margin-top: 30px; }
+            button { display: block; margin: 30px auto 0; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+          </style>
+        </head>
+        <body>
+          <h2>Orders with Pending Balance for ${customerName}</h2>
+          ${ordersHtml}
+          <div class="total-balance">Grand Total Balance (₹): ₹${totalBalance.toFixed(
+            2
+          )}</div>
+          <button onclick="window.print()">Print / Save as PDF</button>
+        </body>
+      </html>
+    `;
+
+          const printWindow = window.open("", "_blank");
+          printWindow.document.write(html);
+          printWindow.document.close();
+        } catch (err) {
+          console.error(err);
+          showToast("Failed to load orders for printing.");
+        }
+      }
+
+      async function fetchCustomers() {
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/orders/customers-with-balance`,
+            { credentials: "include" }
+          );
+          const data = await res.json();
+          const tbody = document.querySelector("#balanceTable tbody");
+          tbody.innerHTML = "";
+
+          if (!data.success || !Array.isArray(data.customers)) {
+            showToast("Failed to load customer data.");
+            return;
+          }
+
+          data.customers.forEach((customer) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${customer.customerName || "N/A"}</td>
+              <td class="balance">₹${parseFloat(customer.balance || 0).toFixed(
+                2
+              )}</td>
+              <td>${formatDate(customer.orderStart)}</td>
+              <td>${formatDate(customer.orderEnd)}</td>
+              <td class="action-flex">
+                <div class="pay">
+                  <input type="number" min="0" max="${
+                    customer.balance
+                  }" step="0.01" placeholder="Pay amount" style="width:100px; margin-right: 5px;" />
+                <button class="payNowBtn">Pay Now</button>
+                </div>
+                <button class="printBtn">Print PDF</button>
+              </td>
+            `;
+
+            const payInput = tr.querySelector('input[type="number"]');
+            const payBtn = tr.querySelector(".payNowBtn");
+            const printBtn = tr.querySelector(".printBtn");
+
+            payBtn.onclick = async () => {
+              const payAmount = parseFloat(payInput.value);
+              if (isNaN(payAmount) || payAmount <= 0) {
+                showToast("Enter a valid payment amount");
+                return;
+              }
+              if (payAmount > customer.balance) {
+                showToast("Payment cannot exceed pending balance");
+                return;
+              }
+              await processPayment(customer.customerId, payAmount, tr);
+            };
+
+            printBtn.onclick = () =>
+              openPrintView(customer.customerId, customer.customerName);
+
+            tbody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+          showToast("Server error.");
+        }
+      }
+
+      // Initial fetch
+      fetchCustomers();
+    </script>
+  </body>
+</html>

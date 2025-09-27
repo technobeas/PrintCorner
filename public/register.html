@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Create account</h1>
+      <p class="helper">Register as a user.</p>
+      <form id="registerForm">
+        <label>Name</label>
+        <input type="text" id="name" required />
+        <label>Email</label>
+        <input type="email" id="email" required />
+        <label>Password</label>
+        <div class="password-container">
+          <input type="password" id="password" required />
+          <i id="togglePassword" class="fa fa-eye"></i>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      <p style="margin-top: 12px; font-size: 14px">
+        Have an account? <a class="link" href="/login.html">Login</a>
+      </p>
+      <div id="msg" style="margin-top: 12px; color: #c2f5c2"></div>
+    </div>
+    <script>
+      const form = document.getElementById("registerForm");
+      const msg = document.getElementById("msg");
+
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+
+      togglePassword.addEventListener("click", () => {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+
+        togglePassword.classList.toggle("fa-eye");
+        togglePassword.classList.toggle("fa-eye-slash");
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msg.style.color = "#ffb4b4";
+          msg.textContent = data.error || "Registration failed";
+          return;
+        }
+        msg.style.color = "#c2f5c2";
+        msg.textContent = "Registered! Redirecting to login...";
+        setTimeout(() => (window.location.href = "/login.html"), 1000);
+      });
+    </script>
+  </body>
+</html>

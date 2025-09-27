@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Products - Admin</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f3f5f9;
+        color: #1e1e1e;
+        padding: 16px 12px;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+        max-width: 100%;
+        margin: 4vh auto;
+        transition: padding 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .card h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #2b2e3a;
+      }
+
+      .helper {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-top: 16px;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="file"] {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 14px;
+        color: #333;
+        background: #fcfcfc;
+        border: 1.5px solid #ccd3e0;
+        border-radius: 12px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #4a6cff;
+        box-shadow: 0 0 0 4px rgba(74, 108, 255, 0.15);
+      }
+
+      button {
+        display: inline-block;
+        width: 100%;
+        padding: 14px;
+        font-size: 14px;
+        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        background-color: #4a6cff;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(74, 108, 255, 0.25);
+        transition: all 0.25s ease;
+        margin-top: 20px;
+      }
+
+      button:hover {
+        background-color: #3a57d0;
+        box-shadow: 0 8px 16px rgba(58, 87, 208, 0.35);
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(58, 87, 208, 0.3);
+      }
+
+      .upload-section {
+        margin-top: 28px;
+      }
+
+      .upload-section label {
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .upload-section input[type="file"] {
+        margin-top: 6px;
+        margin-bottom: 12px;
+        font-size: 13px;
+        background-color: #fff;
+        border-radius: 10px;
+        border: 1.5px solid #ccd3e0;
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      #msg {
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 16px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        min-height: 26px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      #msg.success {
+        background-color: #d2f5dc;
+        color: #206c38;
+      }
+
+      #msg.error {
+        background-color: #f8d7da;
+        color: #842029;
+      }
+
+      /* Large screen styles */
+      @media (min-width: 600px) {
+        body {
+          padding: 20px;
+        }
+
+        .card {
+          max-width: 600px;
+          padding: 36px 32px;
+          border-radius: 16px;
+          margin: 6vh auto;
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h1 {
+          font-size: 28px;
+          margin-bottom: 10px;
+        }
+
+        .helper {
+          font-size: 15px;
+          margin-bottom: 28px;
+        }
+
+        label {
+          font-size: 15px;
+          margin-top: 20px;
+          margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
+          padding: 14px 16px;
+          font-size: 16px;
+        }
+
+        button {
+          padding: 16px;
+          font-size: 16px;
+          margin-top: 24px;
+        }
+
+        .upload-section {
+          margin-top: 36px;
+        }
+
+        .upload-section label {
+          margin-bottom: 8px;
+          font-weight: 600;
+        }
+
+        .upload-section input[type="file"] {
+          margin-top: 6px;
+          margin-bottom: 14px;
+          font-size: 14px;
+          padding: 12px;
+        }
+
+        #msg {
+          font-size: 15px;
+          margin-top: 20px;
+          padding: 12px 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Add New Product</h1>
+      <p class="helper">Only admin can access this page.</p>
+
+      <form id="productForm">
+        <label>Product Name</label>
+        <input type="text" id="name" required />
+
+        <label>Price</label>
+        <input type="number" step="0.01" id="price" required />
+
+        <button type="submit">Add Product</button>
+      </form>
+
+      <div class="upload-section">
+        <label>Import Products from Excel</label>
+        <input type="file" id="excelFile" accept=".xlsx, .xls" />
+        <button type="button" id="uploadExcel">Upload</button>
+      </div>
+
+      <div id="msg" style="margin-top: 12px"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("productForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const msg = document.getElementById("msg");
+          msg.textContent = "";
+          msg.classList.remove("success", "error");
+
+          const name = document
+            .getElementById("name")
+            .value.trim()
+            .replace(/[^a-zA-Z0-9\s\-&(),.'"/°]/g, "");
+          const price = parseFloat(document.getElementById("price").value);
+
+          // Validation
+          if (!name || name.length < 2) {
+            msg.textContent = "Please enter a valid product name.";
+            msg.classList.add("error");
+            return;
+          }
+
+          if (isNaN(price) || price <= 0) {
+            msg.textContent = "Please enter a valid positive price.";
+            msg.classList.add("error");
+            return;
+          }
+
+          try {
+            const res = await fetch(
+              `http://${window.location.hostname}:3000/api/products`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ name, price }),
+              }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              msg.textContent = data.error || "Error adding product.";
+              msg.classList.add("error");
+              return;
+            }
+
+            msg.textContent = "Product's added successfully!";
+            msg.classList.add("success");
+            document.getElementById("productForm").reset();
+          } catch (err) {
+            msg.textContent = "Network error. Please try again.";
+            msg.classList.add("error");
+          }
+        });
+
+      // Add Products in Bulk
+      document
+        .getElementById("uploadExcel")
+        .addEventListener("click", async () => {
+          const input = document.getElementById("excelFile");
+          const msg = document.getElementById("msg");
+          msg.textContent = "";
+          msg.classList.remove("success", "error");
+
+          if (!input.files.length) {
+            msg.textContent = "Please select an Excel file.";
+            msg.classList.add("error");
+            return;
+          }
+
+          const file = input.files[0];
+          const reader = new FileReader();
+
+          reader.onload = async function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet);
+
+            if (!rows.length) {
+              msg.textContent = "No data found in the sheet.";
+              msg.classList.add("error");
+              return;
+            }
+
+            try {
+              let successCount = 0;
+              for (const row of rows) {
+                let name = (row["Product Name"] || row["name"] || "")
+                  .toString()
+                  .trim()
+                  .replace(/[^a-zA-Z0-9\s\-&(),.'"/°]/g, "");
+                let price = parseFloat(row["Price"] || row["price"]);
+
+                if (!name || name.length < 2 || isNaN(price) || price <= 0)
+                  continue;
+
+                if (!name || isNaN(price)) continue;
+
+                const res = await fetch(
+                  `http://${window.location.hostname}:3000/api/products`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({ name: name.trim(), price }),
+                  }
+                );
+
+                if (res.ok) successCount++;
+              }
+
+              msg.textContent = `${successCount} Products imported successfully.`;
+              msg.classList.add("success");
+            } catch (err) {
+              msg.textContent = "Failed to upload products.";
+              msg.classList.add("error");
+            }
+          };
+
+          reader.readAsArrayBuffer(file);
+        });
+    </script>
+  </body>
+</html>

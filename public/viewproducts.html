@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Products</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #f5f7fb;
+        color: #1e1e1e;
+        padding: 20px;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .container {
+        max-width: 900px;
+        width: 100%;
+        background: #fff;
+        padding: 32px 48px;
+        border-radius: 16px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        transition: box-shadow 0.3s ease;
+      }
+
+      .container:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 28px;
+        font-weight: 700;
+        color: #222;
+        user-select: none;
+      }
+
+      .search-bar {
+        margin-bottom: 28px;
+      }
+
+      .search-bar input {
+        width: 100%;
+        padding: 14px 24px;
+        border-radius: 12px;
+        border: 2px solid #ccc;
+        font-size: 17px;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+        box-sizing: border-box;
+        color: #333;
+        outline-offset: 2px;
+      }
+
+      .search-bar input::placeholder {
+        color: #999;
+        font-style: italic;
+      }
+
+      .search-bar input:focus {
+        border-color: #4a90e2;
+        outline: none;
+        background-color: #f0f6ff;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        margin-bottom: 24px;
+        table-layout: fixed;
+        background-color: #fff;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 16px 20px;
+        background: white;
+        border-bottom: none;
+        vertical-align: middle;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        user-select: text;
+        transition: background-color 0.3s ease;
+      }
+
+      th {
+        background-color: #fafafa;
+        font-weight: 700;
+        color: #555;
+        padding-left: 24px;
+        font-size: 0.95rem;
+        user-select: none;
+      }
+
+      tbody tr {
+        box-shadow: 0 2px 6px rgb(0 0 0 / 0.05);
+        transition: transform 0.15s ease, box-shadow 0.3s ease;
+        cursor: default;
+        border-radius: 12px;
+      }
+
+      tbody tr:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        background-color: #f9fbff;
+      }
+
+      tbody tr td:first-child {
+        display: flex;
+        align-items: center;
+        padding-left: 24px;
+      }
+
+      input[type="checkbox"] {
+        margin: 0;
+        vertical-align: middle;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #4a90e2;
+        transition: accent-color 0.3s ease;
+      }
+
+      input[type="checkbox"]:hover {
+        accent-color: #357abd;
+      }
+
+      .btn-delete {
+        background: #ff4d4f;
+        color: white;
+        padding: 14px 36px;
+        border: none;
+        border-radius: 16px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.2s ease;
+        margin-bottom: 32px;
+        box-shadow: 0 6px 14px rgba(255, 77, 79, 0.5);
+        user-select: none;
+        display: inline-block;
+        min-width: 180px;
+        text-align: center;
+      }
+
+      .btn-delete:disabled {
+        background: #ffa29a;
+        cursor: default;
+        box-shadow: none;
+      }
+
+      .btn-delete:not(:disabled):hover {
+        background: #d9363e;
+        box-shadow: 0 8px 20px rgba(217, 54, 62, 0.6);
+      }
+
+      .status {
+        font-size: 15px;
+        margin-bottom: 24px;
+        color: #555;
+        min-height: 20px;
+        user-select: none;
+        font-style: italic;
+      }
+
+      [contenteditable] {
+        cursor: text;
+        user-select: text;
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+        outline: none;
+        min-height: 32px;
+        background-color: transparent;
+      }
+
+      [contenteditable]:hover {
+        background-color: #f0f4fa;
+        box-shadow: inset 0 0 0 1px rgba(74, 144, 226, 0.3);
+      }
+
+      [contenteditable]:focus {
+        background-color: #eef5fb;
+        box-shadow: inset 0 0 0 2px #4a90e2;
+        caret-color: #4a90e2;
+        outline: none;
+      }
+
+      .toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 5px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+        opacity: 0;
+        transition: opacity 0.5s, visibility 0.5s;
+      }
+
+      .toast.show {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 12% auto;
+        padding: 30px 40px;
+        border-radius: 12px;
+        max-width: 360px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .modal-buttons {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .btn-confirm,
+      .btn-cancel {
+        flex: 1;
+        padding: 12px 0;
+        border-radius: 8px;
+        border: none;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-confirm {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-confirm:hover {
+        background-color: #218838;
+        box-shadow: 0 6px 12px rgba(33, 136, 56, 0.5);
+      }
+
+      .btn-cancel {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn-cancel:hover {
+        background-color: #c82333;
+        box-shadow: 0 6px 12px rgba(200, 35, 51, 0.5);
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 0;
+        }
+        .container {
+          width: 100%;
+          padding: 1.25rem 1.5rem;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          background-color: transparent;
+          box-shadow: none;
+        }
+
+        thead tr {
+          display: table;
+          width: 100%;
+          table-layout: fixed;
+        }
+
+        thead th {
+          font-size: 0.9rem;
+          padding: 12px;
+          background-color: #f2f2f2;
+          color: #333;
+          border-bottom: 2px solid #ccc;
+          text-align: left;
+        }
+
+        tbody {
+          display: block;
+          width: 100%;
+        }
+
+        tbody tr {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-bottom: 1.5rem;
+          background: #fff;
+          border-radius: 16px;
+          box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+          padding: 1.25rem 1.5rem;
+        }
+
+        tbody td {
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+          gap: 12px;
+          padding: 0.75rem 0;
+          font-size: 1.1rem;
+          color: #1e1e1e;
+          position: relative;
+          border-bottom: 1px solid #eee;
+          word-break: break-word;
+        }
+
+        tbody td::before {
+          content: attr(data-label);
+          font-weight: 700;
+          color: #555;
+          display: inline-block;
+          min-width: 90px;
+          margin-right: 12px;
+          text-transform: capitalize;
+          vertical-align: top;
+        }
+
+        tbody td[data-label="Select"]::before {
+          display: none;
+        }
+
+        input[type="checkbox"] {
+          position: relative;
+          transform: scale(1.3);
+          margin-right: 12px;
+          accent-color: #4a90e2;
+        }
+
+        tbody td:last-child {
+          display: flex;
+          justify-content: flex-start;
+          gap: 16px;
+          padding-top: 1rem;
+          border-bottom: none;
+        }
+
+        .btn-delete {
+          width: 100%;
+          padding: 16px;
+          font-size: 1.15rem;
+          border-radius: 16px;
+          box-shadow: 0 6px 18px rgba(255, 77, 79, 0.6);
+          margin-bottom: 24px;
+          min-width: unset;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Product List</h1>
+
+      <div class="search-bar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search products by name..."
+        />
+      </div>
+
+      <button type="button" class="btn-delete" onclick="deleteSelected()">
+        Delete Selected
+      </button>
+
+      <p class="status" id="statusMsg"></p>
+
+      <form id="productForm">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAll" /></th>
+              <th>Product Name</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody id="productTable"></tbody>
+        </table>
+      </form>
+
+      <div id="toast" class="toast"></div>
+
+      <!-- Delete Confirmation Modal -->
+      <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+          <p id="deleteModalText">
+            Are you sure you want to delete the selected product(s)?
+          </p>
+          <div class="modal-buttons">
+            <button id="deleteConfirmBtn" class="btn btn-confirm">Yes</button>
+            <button id="deleteCancelBtn" class="btn btn-cancel">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let products = [];
+      let filteredProducts = [];
+
+      const tableBody = document.getElementById("productTable");
+      const searchInput = document.getElementById("searchInput");
+      const statusMsg = document.getElementById("statusMsg");
+      const selectAllCheckbox = document.getElementById("selectAll");
+      const deleteButton = document.querySelector(".btn-delete");
+
+      // Disable delete button initially
+      deleteButton.disabled = true;
+      deleteButton.style.opacity = "0.5";
+      deleteButton.style.cursor = "default";
+
+      function showToast(message, duration = 3000) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = "toast show";
+
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, duration);
+      }
+
+      function showDeleteConfirmModal(count) {
+        return new Promise((resolve) => {
+          const modal = document.getElementById("deleteConfirmModal");
+          const text = document.getElementById("deleteModalText");
+          const confirmBtn = document.getElementById("deleteConfirmBtn");
+          const cancelBtn = document.getElementById("deleteCancelBtn");
+
+          text.textContent = `Delete ${count} selected product(s)?`;
+          modal.style.display = "block";
+
+          const close = (result) => {
+            modal.style.display = "none";
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            resolve(result);
+          };
+
+          confirmBtn.onclick = () => close(true);
+          cancelBtn.onclick = () => close(false);
+
+          window.onclick = (event) => {
+            if (event.target === modal) close(false);
+          };
+        });
+      }
+
+      // Helper to update selectAll checkbox state and delete button enabled state
+      function updateCheckboxUI() {
+        const checkboxes = document.querySelectorAll(".productCheckbox");
+        const checkedBoxes = Array.from(checkboxes).filter((cb) => cb.checked);
+
+        if (checkedBoxes.length === 0) {
+          selectAllCheckbox.indeterminate = false;
+          selectAllCheckbox.checked = false;
+        } else if (checkedBoxes.length === checkboxes.length) {
+          selectAllCheckbox.indeterminate = false;
+          selectAllCheckbox.checked = true;
+        } else {
+          selectAllCheckbox.indeterminate = true;
+          selectAllCheckbox.checked = false;
+        }
+
+        deleteButton.disabled = checkedBoxes.length === 0;
+        deleteButton.style.opacity = deleteButton.disabled ? "0.5" : "1";
+        deleteButton.style.cursor = deleteButton.disabled
+          ? "default"
+          : "pointer";
+      }
+
+      // Fetch all products once on page load
+      async function fetchAllProducts() {
+        try {
+          statusMsg.textContent = "Loading products...";
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/products/all`,
+            {
+              credentials: "include",
+            }
+          );
+          if (!res.ok) throw new Error("Network response not ok");
+          const data = await res.json();
+          products = data;
+          filteredProducts = [...products];
+          renderProducts(filteredProducts);
+          statusMsg.textContent = `Loaded ${products.length} products`;
+          updateCheckboxUI(); // update checkbox UI after initial render
+        } catch (err) {
+          statusMsg.textContent = "⚠️ Failed to fetch products.";
+          console.error(err);
+        }
+      }
+
+      function renderProducts(list) {
+        tableBody.innerHTML = "";
+        if (list.length === 0) {
+          tableBody.innerHTML = `<tr><td colspan="3">No products found.</td></tr>`;
+          updateCheckboxUI();
+          return;
+        }
+        list.forEach((product) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+      <td data-label="Select">
+        <input type="checkbox" class="productCheckbox" data-id="${
+          product.id
+        }" />
+      </td>
+      <td contenteditable="true" data-id="${
+        product.id
+      }" data-field="name" data-label="Product Name">
+        ${escapeHtml(product.name)}
+      </td>
+      <td contenteditable="true" data-id="${
+        product.id
+      }" data-field="price" data-label="Price">
+        $${Number(product.price).toFixed(2)}
+      </td>
+    `;
+          tableBody.appendChild(row);
+        });
+        attachCellListeners();
+        updateCheckboxUI();
+      }
+
+      // Escape HTML to prevent injection in editable fields
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      // Attach blur listeners to editable cells to handle updates
+      function attachCellListeners() {
+        const editableCells = tableBody.querySelectorAll(
+          "[contenteditable=true]"
+        );
+        editableCells.forEach((cell) => {
+          cell.addEventListener("blur", async (e) => {
+            const id = cell.getAttribute("data-id");
+            const field = cell.getAttribute("data-field");
+            let newValue = cell.innerText.trim();
+
+            if (field === "price") {
+              if (newValue.startsWith("$")) {
+                newValue = newValue.slice(1);
+              }
+              const numValue = Number(newValue);
+              if (isNaN(numValue) || numValue < 0) {
+                showToast("Please enter a valid positive number for price.");
+                const oldPrice = products.find((p) => p.id == id).price;
+                cell.innerText = `$${Number(oldPrice).toFixed(2)}`;
+                return;
+              }
+              newValue = numValue;
+            }
+
+            // If no actual change, do nothing
+            const product = products.find((p) => p.id == id);
+            if (!product) return;
+            if (
+              product[field] == newValue ||
+              (field === "price" && Number(product[field]) === Number(newValue))
+            )
+              return;
+
+            try {
+              const updateData = {};
+              updateData[field] = newValue;
+
+              const response = await fetch(
+                `http://${window.location.hostname}:3000/api/products/${id}`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  credentials: "include",
+                  body: JSON.stringify(updateData),
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error("Failed to update product on server");
+              }
+
+              // Update local state
+              product[field] = newValue;
+              const filteredProduct = filteredProducts.find((p) => p.id == id);
+              if (filteredProduct) filteredProduct[field] = newValue;
+
+              // Format price display nicely
+              if (field === "price") {
+                cell.innerText = `$${Number(newValue).toFixed(2)}`;
+              }
+
+              statusMsg.textContent = `Product updated successfully.`;
+              setTimeout(() => (statusMsg.textContent = ""), 3000);
+            } catch (error) {
+              showToast("Error updating product: " + error.message);
+              // revert displayed value
+              if (field === "price") {
+                cell.innerText = `$${Number(product[field]).toFixed(2)}`;
+              } else {
+                cell.innerText = product[field];
+              }
+            }
+          });
+
+          // Add keydown listener for Enter key
+          cell.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault(); // prevent newline insertion
+              cell.blur(); // trigger blur event to save changes
+            }
+          });
+        });
+      }
+
+      // Filter products locally when user types in search box
+      searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase().trim();
+        filteredProducts = products.filter((p) =>
+          p.name.toLowerCase().includes(query)
+        );
+        renderProducts(filteredProducts);
+      });
+
+      // Select All checkbox logic
+      selectAllCheckbox.addEventListener("change", () => {
+        const checkboxes = document.querySelectorAll(".productCheckbox");
+        checkboxes.forEach((cb) => {
+          cb.checked = selectAllCheckbox.checked;
+        });
+        updateCheckboxUI(); // update UI after select all toggle
+      });
+
+      // Sync "Select All" checkbox if any checkbox is unchecked
+      tableBody.addEventListener("change", (e) => {
+        if (e.target.classList.contains("productCheckbox")) {
+          const allCheckboxes = document.querySelectorAll(".productCheckbox");
+          const allChecked = Array.from(allCheckboxes).every(
+            (cb) => cb.checked
+          );
+          selectAllCheckbox.checked = allChecked;
+          updateCheckboxUI(); // update UI after any checkbox toggle
+        }
+      });
+
+      async function deleteSelected() {
+        const checkboxes = document.querySelectorAll(
+          ".productCheckbox:checked"
+        );
+        if (checkboxes.length === 0) {
+          showToast("Please select products to delete.");
+          return;
+        }
+
+        const confirmed = await showDeleteConfirmModal(checkboxes.length);
+        if (!confirmed) return;
+
+        try {
+          const idsToDelete = Array.from(checkboxes).map((cb) =>
+            Number(cb.getAttribute("data-id"))
+          );
+
+          const response = await fetch(
+            `http://${window.location.hostname}:3000/api/products/bulk-delete`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({ ids: idsToDelete }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to delete selected products");
+          }
+
+          const result = await response.json();
+
+          // Remove deleted products from local arrays
+          products = products.filter((p) => !idsToDelete.includes(p.id));
+          filteredProducts = filteredProducts.filter(
+            (p) => !idsToDelete.includes(p.id)
+          );
+
+          renderProducts(filteredProducts);
+          statusMsg.textContent = "Selected products deleted successfully.";
+          setTimeout(() => (statusMsg.textContent = ""), 3000);
+        } catch (err) {
+          showToast("Error deleting products: " + err.message);
+        }
+      }
+
+      fetchAllProducts();
+    </script>
+  </body>
+</html>

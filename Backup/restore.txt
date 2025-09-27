@@ -1,0 +1,18 @@
+@echo off
+REM === Change these variables below ===
+set USER=root
+set PASSWORD=TEchno@123
+set DATABASE=new
+set BACKUP_FILE=C:\Users\zebronics\Desktop\backup_2025-08-16.sql
+
+REM === Path to mysql.exe (update if different) ===
+set MYSQL_PATH="C:\Program Files\MySQL\MySQL Server 9.2\bin\mysql.exe"
+
+REM Create database if it doesn't exist
+%MYSQL_PATH% -u %USER% -p%PASSWORD% -e "CREATE DATABASE IF NOT EXISTS %DATABASE%;"
+
+REM Restore the database
+%MYSQL_PATH% -u %USER% -p%PASSWORD% %DATABASE% < "%BACKUP_FILE%"
+
+echo Restore completed successfully!
+pause

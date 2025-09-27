@@ -1,0 +1,50 @@
+Download 
+Node.js
+SQL Workbench
+MySQL Server
+Python interpreter - Microsoft store 
+
+Add python to path Environment system variable
+Node also
+
+Create db in SQL-workbench
+shop
+Use shop
+
+Add db details in .env
+
+Ask for Admin 
+Name gmail password 
+Update in .env
+
+As for details - Name phone no add. Etc
+To be updated in bill 
+CustomerOrder and balance
+
+Update path of 
+backup.bat
+Restore.bat
+
+Restore our db to shop 
+Run restore.bat
+
+Create start.bat shortcut 
+Add our logo 
+Place on desktop 
+
+And backup.bat
+For manual backup 
+
+Separate folder for backup
+Send latest file on WhatsApp 
+
+Logged in 
+In WhatsApp web
+
+Task Scheduler se Backup 
+Weekly 
+Pc Should be On
+
+Screen off - Never
+
+Bill come in Downloads

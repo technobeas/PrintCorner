@@ -1,0 +1,17 @@
+pip install qrcode[pil]
+
+
+Admin 
+
+SQL Workbench
+shop
+use shop;
+select * from users;
+delete from users where id = 1;
+
+
+see id of role (Admin)
+put in place of 1 
+
+edit in .env (email, Password)
+than run app

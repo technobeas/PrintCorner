@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Order Entry</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 30px;
+        background-color: #f0f2f8;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 700;
+        color: #222;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 6px;
+        font-weight: 600;
+        color: #444;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+        outline: none;
+      }
+
+      .flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 20px;
+        justify-content: flex-start;
+      }
+
+      .flex > div {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      th {
+        background-color: #f1f4f8;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .btn {
+        flex: 1 1 180px;
+        min-width: 140px;
+        padding: 12px 18px;
+        font-size: 16px;
+        font-weight: 700;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        white-space: nowrap;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+      }
+
+      .btn:focus-visible {
+        outline: 3px solid #4a90e2;
+        outline-offset: 2px;
+      }
+
+      .btn-cancel {
+        background-color: #6c757d;
+        color: #fff;
+      }
+
+      .btn-cancel:hover,
+      .btn-cancel:focus {
+        background-color: #565e64;
+        box-shadow: 0 0 10px rgba(86, 94, 100, 0.4);
+      }
+
+      .btn-add {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      .btn-add:hover,
+      .btn-add:focus {
+        background-color: #0056b3;
+        box-shadow: 0 0 10px rgba(0, 86, 179, 0.4);
+      }
+
+      .btn-save {
+        background-color: #28a745;
+        color: #fff;
+      }
+
+      .btn-save:hover,
+      .btn-save:focus {
+        background-color: #1e7e34;
+        box-shadow: 0 0 10px rgba(30, 126, 52, 0.4);
+      }
+
+      .checkbox-label {
+        display: inline-flex;
+        flex-grow: 1;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #333;
+        user-select: none;
+        transition: background-color 0.2s ease;
+      }
+
+      .checkbox-label:hover {
+        background-color: #f3f5f3;
+      }
+
+      .checkbox-label input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        margin: 0;
+        flex-shrink: 0;
+      }
+
+      .cart-scroll-container {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+
+      .toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 5px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+        opacity: 0;
+        transition: opacity 0.5s, visibility 0.5s;
+      }
+
+      .toast.show {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 12% auto;
+        padding: 30px 40px;
+        border-radius: 12px;
+        max-width: 360px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .modal-buttons {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .btn-confirm,
+      .btn-cancel {
+        flex: 1;
+        padding: 12px 0;
+        border-radius: 8px;
+        border: none;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-confirm {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-confirm:hover {
+        background-color: #218838;
+        box-shadow: 0 6px 12px rgba(33, 136, 56, 0.5);
+      }
+
+      .btn-cancel {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn-cancel:hover {
+        background-color: #c82333;
+        box-shadow: 0 6px 12px rgba(200, 35, 51, 0.5);
+      }
+
+      th,
+      td {
+        padding: 8px 6px;
+      }
+
+      input,
+      select,
+      button {
+        font-size: 14px;
+        padding: 8px;
+      }
+
+      #productSearch,
+      #productResults {
+        width: 100%;
+      }
+
+      .border {
+        border: none;
+        padding: 16px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .highlight {
+        color: red;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 15px;
+        }
+
+        .container {
+          padding: 20px;
+        }
+
+        h2 {
+          font-size: 18px;
+        }
+
+        .flex {
+          flex-direction: column;
+          gap: 0.1px;
+        }
+
+        .flex > div {
+          min-width: 100%;
+        }
+
+        .checkbox-label {
+          flex-direction: row;
+          justify-content: flex-start;
+          width: 100%;
+          margin-top: 8px;
+        }
+
+        .btn {
+          flex: 1 1 100%;
+          min-width: auto;
+          width: 100%;
+          margin-top: 10px;
+          font-size: 14px;
+          padding: 10px;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          white-space: nowrap;
+          border: 0;
+        }
+
+        table thead {
+          display: none;
+        }
+
+        table tbody,
+        table tr,
+        table td {
+          display: block;
+          width: 100%;
+        }
+
+        table tr {
+          margin-bottom: 15px;
+          border-bottom: 2px solid #f0f0f0;
+          background: #fff;
+          padding: 10px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        table td {
+          text-align: right;
+          padding-left: 50%;
+          position: relative;
+        }
+
+        table td::before {
+          content: attr(data-label);
+          position: absolute;
+          left: 15px;
+          width: 45%;
+          padding-left: 10px;
+          font-weight: bold;
+          text-align: left;
+          white-space: normal;
+          color: #666;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Customer Order Entry</h2>
+
+     <div class="flex">
+        <div>
+          <label>Search Customer</label>
+          <input
+            type="text"
+            id="customerSearch"
+            placeholder="Type name or phone"
+            list="customerSuggestions"
+            oninput="autocompleteCustomer()"
+          />
+          <datalist id="customerSuggestions"></datalist>
+        </div>
+
+        <div>
+          <label>Phone Number</label>
+          <input type="text" id="phoneInput" readonly />
+        </div>
+
+        <div>
+          <label>Customer Name</label>
+          <input type="text" id="customerName" readonly />
+        </div>
+
+        <div>
+          <label>Order Date</label>
+          <input type="date" id="orderDate" />
+        </div>
+      </div>
+
+      <label>Search Product</label>
+      <input
+        type="text"
+        id="productSearch"
+        placeholder="Search product..."
+        oninput="searchProducts()"
+      />
+      <div id="productResults"></div>
+
+      <div class="cart-scroll-container">
+        <table id="cartTable">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="flex align-middle">
+        <div style="flex: 1">
+          <label for="paymentMode">Payment Mode</label>
+          <select id="paymentMode">
+            <option>Cash</option>
+            <option>Card</option>
+            <option>UPI</option>
+          </select>
+        </div>
+        <label class="checkbox-label">
+          <input type="checkbox" id="gst" />
+          Include GST (18%)
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="paid" checked />
+          Paid in full
+        </label>
+      </div>
+
+      <div class="flex">
+        <div>
+          <label>Sub Total</label>
+          <input type="number" id="subtotal" class="border" disabled readonly />
+        </div>
+
+        <div>
+          <label>GST Amount</label>
+          <input type="number" id="gstTotal" class="border" disabled readonly />
+        </div>
+
+        <div>
+          <label>Total Amount</label>
+          <input
+            type="number"
+            id="totalAmount"
+            class="border highlight"
+            step="0.01"
+            disabled
+            readonly
+          />
+        </div>
+      </div>
+
+      <div class="flex">
+        <div>
+          <label>Payable</label>
+          <input type="number" id="payable" step="0.01" />
+          <div
+            id="manualEditAck"
+            style="
+              color: orange;
+              font-weight: 600;
+              display: none;
+              margin-top: 5px;
+            "
+          >
+            ⚠️ Total manually edited
+          </div>
+        </div>
+        <div>
+          <label>Advance Payment</label>
+          <input type="number" id="advancePayment" oninput="updateBalance()" />
+        </div>
+        <div>
+          <label>Balance</label>
+          <input type="number" id="balance" readonly />
+        </div>
+      </div>
+
+      <div class="flex">
+        <button class="btn btn-cancel" id="cancelBtn">Cancel</button>
+        <button class="btn btn-add" id="whatsappShareBtn">
+          Share on WhatsApp
+        </button>
+
+        <button class="btn btn-save" onclick="saveOrder()">Save Order</button>
+      </div>
+
+      <div id="toast" class="toast"></div>
+
+      <div id="printConfirmModal" class="modal">
+        <div class="modal-content">
+          <p>Do you want to print the bill?</p>
+          <div class="modal-buttons">
+            <button id="modalConfirmBtn" class="btn btn-confirm">Yes</button>
+            <button id="modalCancelBtn" class="btn btn-cancel">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let cart = [];
+      let baseTotal = 0;
+      let isManualTotal = false;
+      let manualPreGstTotal = 0;
+      let isAdmin = false;
+
+      const manualEditAck = document.getElementById("manualEditAck");
+
+      document.getElementById("orderDate").valueAsDate = new Date();
+
+      // Check User Role, if Admin allow item.rate and totalAmount Editing
+      async function checkUserRole() {
+        try {
+          const response = await fetch("/api/me");
+          const data = await response.json();
+          const user = data.user;
+          if (user && user.role === "admin") {
+            isAdmin = true;
+            console.log("Admin logged in — price editing enabled");
+          } else {
+            isAdmin = false;
+            document.getElementById("payable").disabled = true;
+          }
+        } catch (err) {
+          console.error("Error fetching user info:", err);
+        }
+      }
+
+      checkUserRole();
+
+	async function autocompleteCustomer() {
+        const input = document.getElementById("customerSearch").value.trim();
+        const suggestionBox = document.getElementById("customerSuggestions");
+
+        if (!input) {
+          suggestionBox.innerHTML = "";
+          return;
+        }
+
+        const queryParam = isNaN(input)
+          ? `name=${encodeURIComponent(input)}`
+          : `mobile=${encodeURIComponent(input)}`;
+
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/customers/search?${queryParam}`,
+            {
+              credentials: "include",
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const data = await res.json();
+
+          // Reset previous suggestions
+          suggestionBox.innerHTML = "";
+          customerMap = {};
+
+          if (Array.isArray(data)) {
+            data.forEach((customer) => {
+              const label = `${customer.name} (${customer.mobile})`;
+              customerMap[label] = customer;
+
+              const option = document.createElement("option");
+              option.value = label;
+              suggestionBox.appendChild(option);
+            });
+          }
+        } catch (err) {
+          console.error("Autocomplete error:", err);
+        }
+      }
+
+      // When user selects an option from the datalist
+      document
+        .getElementById("customerSearch")
+        .addEventListener("input", () => {
+          const selected = document.getElementById("customerSearch").value;
+          const customer = customerMap[selected];
+
+          if (customer) {
+            document.getElementById("customerName").value = customer.name;
+            document.getElementById("phoneInput").value = customer.mobile;
+          } else {
+            document.getElementById("customerName").value = "";
+            document.getElementById("phoneInput").value = "";
+          }
+        });
+
+      function showToast(message, duration = 3000) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = "toast show";
+
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, duration);
+      }
+
+      function showPrintConfirmModal(onConfirm, onCancel) {
+        const modal = document.getElementById("printConfirmModal");
+        const confirmBtn = document.getElementById("modalConfirmBtn");
+        const cancelBtn = document.getElementById("modalCancelBtn");
+
+        modal.style.display = "block";
+
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+
+        confirmBtn.onclick = () => {
+          modal.style.display = "none";
+          if (onConfirm) onConfirm();
+        };
+
+        cancelBtn.onclick = () => {
+          modal.style.display = "none";
+          if (onCancel) onCancel();
+        };
+
+        window.onclick = (event) => {
+          if (event.target === modal) {
+            modal.style.display = "none";
+            if (onCancel) onCancel();
+          }
+        };
+      }
+
+      // Search Customer using Number
+      async function searchCustomer() {
+        const mobile = document.getElementById("phoneInput").value.trim();
+        if (!mobile)
+          return (document.getElementById("customerName").value = "");
+
+        try {
+          const res = await fetch(
+            `http://${
+              window.location.hostname
+            }:3000/api/customers?mobile=${encodeURIComponent(mobile)}`,
+            {
+              credentials: "include",
+            }
+          );
+          const data = await res.json();
+          if (data && data.name) {
+            document.getElementById("customerName").value = data.name;
+          } else if (data.found && data.customer) {
+            document.getElementById("customerName").value = data.customer.name;
+          } else if (Array.isArray(data) && data.length > 0) {
+            document.getElementById("customerName").value = data[0].name;
+          } else {
+            document.getElementById("customerName").value =
+              "Customer not found";
+          }
+        } catch {
+          document.getElementById("customerName").value = "N/A";
+        }
+      }
+
+      // Search Products
+      async function searchProducts() {
+        const q = document.getElementById("productSearch").value.toLowerCase();
+        if (!q) return;
+        const res = await fetch(
+          `http://${window.location.hostname}:3000/api/products?q=${q}`,
+          {
+            credentials: "include",
+          }
+        );
+        const matched = await res.json();
+        const container = document.getElementById("productResults");
+        container.innerHTML = "";
+        matched.forEach((p) => {
+          const btn = document.createElement("button");
+          btn.className = "btn btn-add";
+          btn.textContent = `${p.name} - ₹${p.price}`;
+          btn.onclick = () => addToCart(p);
+          container.appendChild(btn);
+        });
+      }
+
+      function calculateCosts() {
+        // Base subtotal from cart
+        const subtotal = cart.reduce((sum, item) => {
+          const price = Number(item.price) || 0;
+          const qty = Number(item.quantity) || 0;
+          return sum + price * qty;
+        }, 0);
+
+        // GST handling
+        const gstIncluded = document.getElementById("gst").checked;
+        const gstPercentage = gstIncluded ? 18 : 0;
+        const gstAmount = (subtotal * gstPercentage) / 100;
+
+        // System total (before manual edit)
+        const systemTotal = subtotal + gstAmount;
+
+        // Final payable: manual or system
+        const payable = isManualTotal
+          ? parseFloat(document.getElementById("payable").value) || systemTotal
+          : systemTotal;
+
+        // Advance / Balance
+        const userAdvance =
+          parseFloat(document.getElementById("advancePayment").value) || 0;
+        const paidInFull = document.getElementById("paid").checked;
+        const finalAdvance = paidInFull ? payable : userAdvance;
+        const balance = paidInFull ? 0 : payable - finalAdvance;
+
+        const result = {
+          subtotal,
+          gstPercentage,
+          gstAmount,
+          systemTotal,
+          payable,
+          advance: finalAdvance,
+          balance,
+          isManualTotal,
+        };
+        return result;
+      }
+
+      function applyCostsToUI(costs) {
+        document.getElementById("subtotal").value = costs.subtotal.toFixed(2);
+        document.getElementById("gstTotal").value = costs.gstAmount.toFixed(2);
+
+        document.getElementById("totalAmount").value =
+          costs.subtotal + costs.gstAmount;
+
+        // Only update payable if NOT manually edited
+        if (!costs.isManualTotal) {
+          document.getElementById("payable").value = costs.payable.toFixed(2);
+        }
+
+        // Update advance only if "Paid in Full" is checked
+        if (document.getElementById("paid").checked) {
+          document.getElementById("advancePayment").value =
+            costs.advance.toFixed(2);
+        }
+
+        document.getElementById("balance").value = costs.balance.toFixed(2);
+      }
+
+      // Add to Cart Function
+      function addToCart(product) {
+        const existing = cart.find((item) => item.id === product.id);
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ ...product, quantity: 1 });
+        }
+        isManualTotal = false;
+        refreshCart();
+        document.getElementById("productResults").innerHTML = "";
+        document.getElementById("productSearch").value = "";
+      }
+
+      function refreshCart() {
+        const tbody = document.querySelector("#cartTable tbody");
+        tbody.innerHTML = "";
+        let total = 0;
+        cart.forEach((item, index) => {
+          const amount = item.quantity * item.price;
+          total += amount;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+      <td data-label="Product">${item.name}</td>
+      <td data-label="Quantity"><input type="number" value="${
+        item.quantity
+      }" min="1" onchange="updateQty(${index}, this.value)"></td>
+      <td data-label="Rate"><input type="number" class="changeRate" value="${
+        item.price
+      }" min="0" onchange="updateRate(${index}, this.value)"></td>
+      <td data-label="Amount">₹${amount.toFixed(2)}</td>
+      <td data-label="Action"><button class="btn btn-remove" onclick="removeItem(${index})">Remove</button></td>
+    `;
+          tbody.appendChild(tr);
+        });
+
+        const costs = calculateCosts();
+        applyCostsToUI(costs);
+
+        if (!isManualTotal) {
+          document.getElementById("totalAmount").value =
+            costs.payable.toFixed(2);
+          manualEditAck.style.display = "none";
+        }
+
+        document.querySelectorAll(".changeRate").forEach((input) => {
+          input.disabled = !isAdmin;
+        });
+      }
+
+      document.getElementById("payable").addEventListener("change", (e) => {
+        const val = parseFloat(e.target.value);
+        if (!isNaN(val)) {
+          isManualTotal = true;
+          manualEditAck.style.display = "block";
+
+          if (document.getElementById("gst").checked) {
+            manualPreGstTotal = val / 1.18;
+            const gstAmount = val - manualPreGstTotal;
+            document.getElementById("gstTotal").value = gstAmount.toFixed(2);
+          } else {
+            manualPreGstTotal = val;
+            document.getElementById("gstTotal").value = "0.00";
+          }
+
+          document.getElementById("subtotal").value =
+            manualPreGstTotal.toFixed(2);
+
+          // Advance & Balance recalculation
+          const advance =
+            parseFloat(document.getElementById("advancePayment").value) || 0;
+          const paidInFull = document.getElementById("paid").checked;
+          const balance = paidInFull ? 0 : val - advance;
+          document.getElementById("balance").value = balance.toFixed(2);
+
+          const costs = calculateCosts();
+          costs.payable = val;
+          applyCostsToUI(costs);
+        }
+      });
+
+      function updateQty(index, value) {
+        cart[index].quantity = parseInt(value) || 1;
+        isManualTotal = false;
+        manualEditAck.style.display = "none";
+        refreshCart();
+      }
+
+      function updateRate(index, value) {
+        cart[index].price = parseFloat(value) || 0;
+        isManualTotal = false;
+        manualEditAck.style.display = "none";
+        refreshCart();
+      }
+
+      function removeItem(index) {
+        cart.splice(index, 1);
+        isManualTotal = false;
+        manualEditAck.style.display = "none";
+        refreshCart();
+      }
+
+      document
+        .getElementById("whatsappShareBtn")
+        .addEventListener("click", async () => {
+          if (!cart.length) {
+            showToast("Cart is empty. Add products before sharing.");
+            return;
+          }
+
+          try {
+            let rawMobile = document.getElementById("phoneInput").value.trim();
+            const customerName =
+              document.getElementById("customerName").value || "N/A";
+            if (!rawMobile) {
+              showToast("Please enter the customer's phone number.");
+              return;
+            }
+
+            let mobile = rawMobile.replace(/\D/g, "");
+            if (mobile.length === 10) {
+              mobile = "91" + mobile;
+            } else if (!(mobile.length === 12 && mobile.startsWith("91"))) {
+              showToast("Please enter a valid 10-digit phone number.");
+              return;
+            }
+
+            const orderDate =
+              document.getElementById("orderDate").value || "N/A";
+            const paymentMode = document.getElementById("paymentMode").value;
+
+            const costs = calculateCosts();
+
+            let orderText = `*Order Summary*\n\n*Customer:* ${customerName}\n*Phone:* ${mobile}\n*Order Date:* ${orderDate}\n*Payment Mode:* ${paymentMode}\n\n*Items:*\n`;
+
+            cart.forEach((item, idx) => {
+              const price = Number(item.price) || 0;
+              const quantity = Number(item.quantity) || 0;
+              orderText += `${idx + 1}. ${
+                item.name
+              } x${quantity} @ ₹${price.toFixed(2)} = ₹${(
+                quantity * price
+              ).toFixed(2)}\n`;
+            });
+
+            orderText += `\n*Subtotal:* ₹${costs.subtotal.toFixed(2)}`;
+
+            if (costs.gstAmount > 0) {
+              orderText += `\n*GST (18%):* ₹${costs.gstAmount.toFixed(2)}`;
+            }
+
+            orderText += `\n*Total:* ₹${costs.systemTotal.toFixed(2)}`;
+
+            if (costs.systemTotal !== costs.payable) {
+              orderText += `\n*Payable:* ₹${costs.payable.toFixed(2)}`;
+            }
+
+            if (costs.advance < costs.payable) {
+              orderText += `\n*Advance Payment:* ₹${costs.advance.toFixed(2)}`;
+            }
+
+            if (costs.balance > 0) {
+              orderText += `\n*Balance:* ₹${costs.balance.toFixed(2)}`;
+            }
+
+            if (costs.isManualTotal) {
+              orderText += `\n*Note:* Discounted`;
+            }
+
+            const encodedMessage = encodeURIComponent(orderText);
+
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(
+              navigator.userAgent
+            );
+            const baseUrl = isMobile
+              ? "https://api.whatsapp.com/send"
+              : "https://web.whatsapp.com/send";
+
+            const whatsappUrl = `${baseUrl}?phone=${mobile}&text=${encodedMessage}`;
+
+            window.open(whatsappUrl, "_blank");
+
+            const saved = await saveOrder("whatsapp");
+            if (!saved) {
+              showToast("Order could not be saved. Please try again.");
+              return;
+            }
+
+            clearFormAndCart();
+          } catch (error) {
+            showToast("Unexpected error occurred: " + error.message);
+          }
+        });
+
+      // Reset All
+      function clearFormAndCart() {
+        document.getElementById("customerName").value = "";
+        document.getElementById("phoneInput").value = "";
+        document.getElementById("orderDate").valueAsDate = new Date();
+        document.querySelector("select").value = "Cash";
+        document.getElementById("gst").checked = false;
+        document.getElementById("totalAmount").value = "";
+        document.getElementById("advancePayment").value = "";
+        document.getElementById("balance").value = "";
+        document.getElementById("productSearch").value = "";
+        document.getElementById("productResults").innerHTML = "";
+        cart = [];
+        isManualTotal = false;
+        refreshCart();
+      }
+
+      function updateBalance() {
+        const costs = calculateCosts();
+        applyCostsToUI(costs);
+      }
+
+      // Add Gst
+      document.getElementById("gst").addEventListener("change", updateBalance);
+
+      // Paid Full
+      document.getElementById("paid").addEventListener("change", () => {
+        const paid = document.getElementById("paid").checked;
+        const total = parseFloat(document.getElementById("payable").value) || 0;
+        if (paid) {
+          document.getElementById("advancePayment").value = total.toFixed(2);
+          document.getElementById("balance").value = "0.00";
+        } else {
+          document.getElementById("advancePayment").value = "";
+          document.getElementById("balance").value = total.toFixed(2);
+        }
+      });
+
+      async function saveOrder(mode = "print") {
+        const customerNameField = document
+          .getElementById("customerName")
+          .value.trim();
+        const shouldInsertCustomer =
+          customerNameField &&
+          customerNameField !== "Customer not found" &&
+          customerNameField !== "N/A";
+
+        const customerPhone = document
+          .getElementById("phoneInput")
+          .value.trim();
+        const customerName = document
+          .getElementById("customerName")
+          .value.trim();
+        const orderDate = document.getElementById("orderDate").value;
+        const paymentMode = document.getElementById("paymentMode").value;
+
+        const costs = calculateCosts();
+
+        const totalAmount = costs.systemTotal;
+        const advancePayment = costs.advance;
+        const balance = costs.balance;
+        const gstAmount = costs.gstAmount;
+        const payable = costs.payable;
+        const subtotal = costs.subtotal;
+        const gstIncluded = document.getElementById("gst").checked;
+        const paidInFull = document.getElementById("paid").checked;
+
+        if (!cart.length) {
+          showToast("Cart is empty.");
+          return false;
+        }
+
+        if (!paidInFull && !customerPhone) {
+          showToast("Cannot save unpaid order without customer phone number.");
+          return false;
+        }
+
+        // New Logic Below
+        if (customerPhone && customerName === "N/A" || customerPhone && customerName === "")
+        {
+          showToast("Add Customer Name");
+          return false;
+        }
+
+        if (customerName && !customerPhone) {
+          showToast("Add Customer Number");
+          return false;
+        }
+
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/orders`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                customerPhone,
+                orderDate,
+                paymentMode,
+                totalAmount,
+                advancePayment,
+                balance,
+                cart,
+                customerName: shouldInsertCustomer ? customerNameField : null,
+                gstIncluded,
+                paidInFull,
+                gstAmount,
+                payable,
+                subtotal,
+              }),
+            }
+          );
+
+          const result = await res.json();
+          if (result.success) {
+            showToast(`Order saved! ID: ${result.orderId}`);
+
+            if (mode === "print") {
+              showPrintConfirmModal(
+                () => {
+                  generateAndPrintBill({
+                    customerName,
+                    customerPhone,
+                    orderDate,
+                    paymentMode,
+                    totalAmount,
+                    advancePayment,
+                    balance,
+                    cart,
+                    orderId: result.orderId,
+                    gstIncluded,
+                    paidInFull,
+                    isTotalManuallyEdited: costs.isManualTotal,
+                  });
+                  clearFormAndCart();
+                },
+                () => {
+                  clearFormAndCart();
+                }
+              );
+            }
+
+            return result;
+          } else {
+            showToast("Failed to save order.");
+            return false;
+          }
+        } catch (err) {
+          showToast("Error saving order: " + err.message);
+          return false;
+        }
+      }
+
+      document.getElementById("cancelBtn").addEventListener("click", () => {
+        document.getElementById("phoneInput").value = "";
+        document.getElementById("customerName").value = "";
+        document.getElementById("orderDate").valueAsDate = new Date();
+        document.getElementById("productSearch").value = "";
+        document.getElementById("productResults").innerHTML = "";
+        document.getElementById("totalAmount").value = "";
+        document.getElementById("advancePayment").value = "";
+        document.getElementById("balance").value = "";
+        document.getElementById("paid").checked = false;
+        document.getElementById("gst").checked = false;
+        cart = [];
+        isManualTotal = false;
+        refreshCart();
+      });
+
+      function generateAndPrintBill(order) {
+        let {
+          customerName,
+          customerPhone,
+          orderDate,
+          paymentMode,
+          orderId,
+          cart,
+        } = order;
+
+        const costs = calculateCosts();
+        const formatAmount = (value) =>
+          isNaN(value) ? "0.00" : Number(value).toFixed(2);
+
+        let printWindow = window.open(
+          "",
+          "PrintWindow",
+          "width=800,height=600"
+        );
+
+        // 🧾 Generate rows with page-breaks every 20 items
+        const rowsHtml = cart
+          .map((item, idx) => {
+            const price = Number(item.price) || 0;
+            const quantity = Number(item.quantity) || 0;
+            const row = `
+        <tr class="item-row ${(idx + 1) % 20 === 0 ? "page-break" : ""}">
+          <td>${idx + 1}</td>
+          <td>${item.name}</td>
+          <td>${quantity}</td>
+          <td>₹${price.toFixed(2)}</td>
+          <td>₹${(quantity * price).toFixed(2)}</td>
+        </tr>`;
+            return row;
+          })
+          .join("");
+
+        let html = `
+    <html>
+      <head>
+        <title>Invoice #${orderId}</title>
+        <style>
+          body, p, h2, table {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+          }
+          body { padding: 30px 40px; background: #fff; }
+          h2 { text-align: center; margin-bottom: 20px; color: #2c3e50; font-weight: 700; font-size: 24px; }
+          p { margin: 4px 0; font-size: 14px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ddd; padding: 10px 12px; font-size: 14px; }
+          th { background-color: #f7f7f7; color: #2c3e50; font-weight: 600; }
+          .right { text-align: right; font-weight: 600; font-size: 15px; margin: 6px 0; color: #2c3e50; }
+          .acknowledgment { font-weight: 700; font-size: 16px; margin-top: 15px; color: ${
+            costs.balance === 0 ? "#27ae60" : "#e67e22"
+          }; text-align: right; }
+          .header-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 20px;
+}
+
+.order-info,
+.shop-info {
+  width: 48%;
+  font-size: 14px;
+}
+
+.shop-info {
+  text-align: right;
+}
+
+           @media print {
+          .page-break {
+            page-break-after: always;
+          }
+        }
+
+        </style>
+      </head>
+      <body>
+        <h2>Dezine Dot</h2>
+        <div class="header-info">
+  <div class="order-info">
+    <p><strong>Order ID:</strong> ${orderId}</p>
+    <p><strong>Date:</strong> ${orderDate}</p>
+    <p><strong>Customer:</strong> ${customerName || "N/A"}</p>
+    <p><strong>Phone:</strong> ${customerPhone || "N/A"}</p>
+    <p><strong>Payment Mode:</strong> ${paymentMode}</p>
+  </div>
+  <div class="shop-info">
+    <p><strong>Shop Name:</strong> Dezine Dot</p>
+    <p><strong>Address:</strong> Main Street, City</p>
+    <p><strong>Phone:</strong> +91 98765 43210</p>
+    <p><strong>GSTIN:</strong> 29ABCDE1234F2Z5</p>
+  </div>
+</div>
+
+
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Qty</th>
+              <th>Rate (₹)</th>
+              <th>Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+             ${rowsHtml}
+          </tbody>
+        </table>
+
+      <div class="summary">
+        <p class="right"><strong>Subtotal:</strong> ₹${formatAmount(
+          costs.subtotal
+        )}</p>
+        
+        ${
+          costs.gstAmount > 0
+            ? `<p class="right"><strong>GST (${
+                costs.gstPercentage
+              }%):</strong> ₹${formatAmount(costs.gstAmount)}</p>`
+            : ""
+        }
+
+        ${
+          costs.systemTotal !== costs.payable
+            ? `<p class="right"><strong>Total (System):</strong> ₹${formatAmount(
+                costs.systemTotal
+              )}</p>`
+            : ""
+        }
+
+
+        <p class="right"><strong>Payable:</strong> ₹${formatAmount(
+          costs.payable
+        )}</p>
+
+        ${
+          isManualTotal
+            ? `<p class="right" style="color:#e67e22; font-weight:700;">Discounted</p>`
+            : ""
+        }
+
+        ${
+          costs.advance !== costs.payable
+            ? `<p class="right"><strong>Advance Payment:</strong> ₹${formatAmount(
+                costs.advance
+              )}</p>`
+            : ""
+        }
+
+        ${
+          costs.balance > 0
+            ? `<p class="right"><strong>Balance:</strong> ₹${formatAmount(
+                costs.balance
+              )}</p>`
+            : ""
+        }
+
+        <p class="acknowledgment">Payment Status: ${
+          costs.balance === 0 ? "Paid" : "Payment Pending"
+        }</p>
+      </div>
+
+      
+      <hr/>
+      <p style="text-align:center; font-size:13px; color:#777;">Thank you for your business!</p>
+    </body>
+  </html>
+  `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+
+        setTimeout(() => {
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        }, 500);
+      }
+    </script>
+  </body>
+</html>

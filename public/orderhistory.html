@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Orders</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 1rem;
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background-color: #f5f7fa;
+        color: #1e1e1e;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #1e1e1e;
+      }
+
+      /* Main Container */
+      .main-container {
+        background-color: #ffffff;
+        padding: 1.5rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      /* Form Group */
+      .form-group {
+        margin-bottom: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+
+      /* Labels */
+      label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      /* Inputs */
+      input[type="text"],
+      input[type="date"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1.5px solid #ccd3e0;
+        border-radius: 10px;
+        background-color: #fefefe;
+        transition: all 0.2s ease;
+      }
+
+      input:focus {
+        border-color: #4a6cff;
+        box-shadow: 0 0 0 3px rgba(74, 108, 255, 0.15);
+        outline: none;
+      }
+
+      /* Buttons */
+      button,
+      #exportBtn {
+        display: block;
+        width: 100%;
+        padding: 0.9rem 1rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+
+      button {
+        background: linear-gradient(135deg, #4a6cff, #3a57d0);
+        margin-top: 1rem;
+        box-shadow: 0 4px 12px rgba(74, 108, 255, 0.25);
+      }
+
+      button:hover {
+        background: linear-gradient(135deg, #3a57d0, #2e3eb7);
+        transform: translateY(-2px);
+      }
+
+      #exportBtn {
+        background-color: #00b894;
+        margin-top: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 184, 148, 0.2);
+      }
+
+      #exportBtn:hover {
+        background-color: #009e7a;
+        transform: translateY(-2px);
+      }
+
+      /* Orders Message */
+      #ordersList {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 1rem;
+        color: #444;
+        word-break: break-word;
+        padding: 0 0.75rem;
+        max-width: 100%;
+      }
+
+      /* Table container for responsiveness */
+      .table-wrapper {
+        overflow-x: auto;
+        width: 100%;
+        margin-top: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Table Styles */
+      #ordersTable {
+        min-width: 600px;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        background-color: #fff;
+      }
+
+      thead {
+        background-color: #e6ebf7;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+      }
+
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #dde3f0;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      /* Action Buttons in Table */
+      td button {
+        background-color: #ff6b6b;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      td button:hover {
+        background-color: #e84d4d;
+        transform: scale(1.05);
+      }
+
+      /* Accessibility */
+      input:focus-visible,
+      button:focus-visible,
+      td button:focus-visible {
+        outline: 3px solid #4a6cff;
+        outline-offset: 3px;
+      }
+
+      .toast {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 5px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        bottom: 30px;
+        font-size: 17px;
+        opacity: 0;
+        transition: opacity 0.5s, visibility 0.5s;
+      }
+
+      .toast.show {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      /* ======================== */
+      /* Responsive Enhancements  */
+      /* ======================== */
+      @media (min-width: 600px) {
+        .main-container {
+          width: 60%;
+        }
+
+        h2 {
+          font-size: 2rem;
+        }
+
+        #ordersTable {
+          font-size: 0.95rem;
+        }
+
+        th,
+        td {
+          padding: 0.6rem 0.75rem;
+        }
+
+        td button {
+          font-size: 0.9rem;
+          padding: 0.5rem 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <h2>Search Customer Orders</h2>
+
+      <div class="form-group">
+        <label for="searchMobile">Mobile Number</label>
+        <input
+          type="text"
+          id="searchMobile"
+          placeholder="Enter mobile number"
+          inputmode="numeric"
+          pattern="[0-9]*"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" />
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" />
+      </div>
+
+      <button onclick="searchOrders()">Search Orders</button>
+    </div>
+
+    <button onclick="exportToCSV()" style="display: none" id="exportBtn">
+      Export to Excel
+    </button>
+
+    <div id="ordersList" style="margin-top: 10px; color: #333"></div>
+
+    <div class="table-wrapper" style="display: none" id="tableWrapper">
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th>Order Date</th>
+            <th>Customer Mobile</th>
+            <th>Products</th>
+            <th>Total Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      async function searchOrders() {
+        const mobile = document.getElementById("searchMobile").value.trim();
+        const start = document.getElementById("startDate").value;
+        const end = document.getElementById("endDate").value;
+
+        function showToast(message, duration = 3000) {
+          const toast = document.getElementById("toast");
+          toast.textContent = message;
+          toast.className = "toast show";
+
+          setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
+          }, duration);
+        }
+
+        const url = new URL(
+          `http://${window.location.hostname}:3000/api/orders`
+        );
+
+        if (mobile) url.searchParams.append("mobile", mobile);
+        if (start && end) {
+          url.searchParams.append("start", start);
+          url.searchParams.append("end", end);
+        }
+
+        try {
+          // const res = await fetch(url);
+
+          const res = await fetch(url.toString(), {
+            credentials: "include", 
+          });
+
+          if (!res.ok) throw new Error("Network response was not ok");
+          const orders = await res.json();
+
+          const table = document.getElementById("ordersTable");
+          document.getElementById("tableWrapper").style.display = "block";
+          const tbody = table.querySelector("tbody");
+          const messageDiv = document.getElementById("ordersList");
+
+          tbody.innerHTML = "";
+          messageDiv.textContent = "";
+
+          if (!orders.length) {
+            table.style.display = "none";
+            document.getElementById("exportBtn").style.display = "none";
+            messageDiv.textContent = "No orders found.";
+            return;
+          }
+
+          table.style.display = "table";
+          document.getElementById("exportBtn").style.display = "inline-block";
+
+          // Loop once over orders only
+          orders.forEach((order) => {
+            const orderDate = new Date(order.orderDate).toLocaleDateString();
+            const customerMobile = order.customerMobile || mobile || "N/A";
+            const products = order.products || "";
+            const totalAmount = Number(order.payable).toFixed(2);
+            console.log("Order total amount:", totalAmount); //
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+  <td>${orderDate}</td>
+  <td>${customerMobile}</td>
+  <td>${products}</td>
+  <td>${totalAmount}</td>
+  <td><button onclick="printBill(${order.orderId})">Print Bill</button></td>
+`;
+
+            tbody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error("Fetch error:", err);
+          showToast("Failed to fetch orders.");
+        }
+      }
+
+      // Excel
+      function exportToCSV() {
+        const table = document.getElementById("ordersTable");
+        const rows = table.querySelectorAll("tr");
+        let csvContent = "";
+
+        rows.forEach((row) => {
+          const cells = Array.from(row.querySelectorAll("th, td"));
+          const cols = cells
+            .slice(0, -1) // Exclude Action column
+            .map((td) => `"${td.textContent.replace(/"/g, '""')}"`);
+          csvContent += cols.join(",") + "\n";
+        });
+
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0]; // e.g., "2025-08-23"
+        const fileName = `orders_${formattedDate}.csv`;
+
+        const blob = new Blob(["\uFEFF" + csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      async function printBill(orderId) {
+        try {
+          const res = await fetch(
+            `http://${window.location.hostname}:3000/api/orders/${orderId}`,
+            { credentials: "include" }
+          );
+          if (!res.ok) throw new Error("Order not found");
+          const order = await res.json();
+
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF();
+
+          //  Colors
+          const primaryColor = "#2c3e50";
+          const paidColor = "#27ae60";
+          const pendingColor = "#e67e22";
+          const grayText = "#666";
+
+          //  Calculations
+          const gstPercentage = order.gstIncluded ? 18 : 0;
+          const gstAmount = (order.totalAmount * gstPercentage) / 100;
+
+          const safeAmount = (v) =>
+            isNaN(Number(v)) ? "0.00" : Number(v).toFixed(2);
+
+          //  Title
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(20);
+          doc.setTextColor(primaryColor);
+          doc.text("Dezine Dot", 105, 20, null, null, "center");
+
+          //  Order Info
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor(0);
+
+          const leftX = 14;
+          const rightX = 150;
+          let infoY = 30;
+
+          doc.text(
+            `Customer Name: ${order.customerName || "N/A"}`,
+            leftX,
+            infoY
+          );
+
+          doc.text(
+            `Date: ${new Date(order.orderDate).toLocaleDateString()}`,
+            rightX,
+            infoY
+          );
+          infoY += 7; // move to next line
+
+          doc.text(
+            `Customer Mobile: ${order.customerMobile || "N/A"}`,
+            leftX,
+            infoY
+          );
+          infoY += 10; // space before next section
+
+          // Function to draw table header (used on new pages too)
+          function drawTableHeader(yPos) {
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(primaryColor);
+            doc.setFontSize(12);
+
+            doc.text("Product", 14, yPos);
+            doc.text("Qty", 100, yPos, null, null, "center");
+            doc.text("Rate", 140, yPos, null, null, "right");
+            doc.text("Amount", 180, yPos, null, null, "right");
+
+            doc.setDrawColor(180);
+            doc.line(14, yPos + 2, 196, yPos + 2);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.setTextColor(0);
+          }
+
+          //  Table Headers
+          const startY = infoY;
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(primaryColor);
+          doc.setFontSize(12);
+
+          doc.text("Product", 14, startY);
+          doc.text("Qty", 100, startY, null, null, "center");
+          doc.text("Rate", 140, startY, null, null, "right");
+          doc.text("Amount", 180, startY, null, null, "right");
+
+          doc.setLineWidth(0.4);
+          doc.setDrawColor(180);
+          doc.line(14, startY + 2, 196, startY + 2);
+
+          //  Items
+          let y = startY + 10;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(11);
+          doc.setTextColor(0);
+
+          order.items.forEach((item) => {
+            const quantity = Number(item.quantity) || 0;
+            const rate = Number(item.rate) || 0;
+            const total = quantity * rate;
+
+            if (y > 260) {
+              doc.addPage();
+              y = 20;
+              drawTableHeader(y);
+              y += 10;
+            }
+
+            doc.text(item.description, 14, y);
+            doc.text(String(quantity), 100, y, null, null, "center");
+            doc.text(rate.toFixed(2), 140, y, null, null, "right");
+            doc.text(total.toFixed(2), 180, y, null, null, "right");
+            y += 8;
+          });
+
+          //  Divider
+          doc.setDrawColor(200);
+          doc.line(14, y + 2, 196, y + 2);
+          y += 10;
+
+          //  Summary Section
+          const labelX = 140;
+          const valueX = 180;
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(primaryColor);
+          doc.setFontSize(11);
+
+          //  Always show Subtotal
+          doc.text("Subtotal:", labelX, y);
+          doc.text(safeAmount(order.subtotal), valueX, y, null, null, "right");
+          y += 7;
+
+          //  GST line only if gstAmount > 0
+          if (Number(order.gstAmount) > 0) {
+            doc.text("GST:", labelX, y);
+            doc.text(
+              safeAmount(order.gstAmount),
+              valueX,
+              y,
+              null,
+              null,
+              "right"
+            );
+            y += 7;
+          }
+
+          //  Total Amount only if totalAmount !== payable
+          if (Number(order.totalAmount) !== Number(order.payable)) {
+            doc.text("Total :", labelX, y);
+            doc.text(
+              safeAmount(order.totalAmount),
+              valueX,
+              y,
+              null,
+              null,
+              "right"
+            );
+            y += 7;
+          }
+
+          // Set colors
+          const highlightColor = [230, 230, 250]; // light lavender
+          const payableTextColor = [0, 0, 180]; // dark blue
+          const balanceTextColor = [180, 0, 0]; // dark red
+
+          // --- Payable (always shown)
+          const payableText = "Payable:";
+          const payableValue = safeAmount(order.payable);
+          const textHeight = 7;
+          const padding = 1;
+          const rectHeight = textHeight + padding;
+
+          doc.setFillColor(...highlightColor);
+          doc.rect(labelX - 2, y - 5, valueX - labelX + 20, rectHeight, "F"); // background highlight
+
+          doc.setTextColor(...payableTextColor);
+          doc.text(payableText, labelX, y);
+          doc.text(payableValue, valueX, y, null, null, "right");
+          y += textHeight;
+
+          doc.setTextColor(0, 0, 0);
+
+          //  Advance Payment only if < payable
+          if (
+            Number(order.advancePayment) > 0 &&
+            Number(order.advancePayment) < Number(order.payable)
+          ) {
+            doc.text("Adv. :", labelX, y);
+            doc.text(
+              safeAmount(order.advancePayment),
+              valueX,
+              y,
+              null,
+              null,
+              "right"
+            );
+            y += 6;
+          }
+
+          // --- Balance (only if present)
+          if (Number(order.balance) > 0) {
+            const balanceText = "Balance:";
+            const balanceValue = safeAmount(order.balance);
+
+            doc.setFillColor(...highlightColor);
+            doc.rect(labelX - 2, y - 5, valueX - labelX + 20, rectHeight, "F");
+
+            doc.setTextColor(...balanceTextColor);
+            doc.text(balanceText, labelX, y);
+            doc.text(balanceValue, valueX, y, null, null, "right");
+            y += 8;
+          } else {
+            y += 4; // spacing if no balance
+          }
+
+          // Reset text color to default (black)
+          doc.setTextColor(0, 0, 0);
+
+          //  Payment Status
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.setTextColor(order.paidInFull ? paidColor : pendingColor);
+
+          const statusText = order.paidInFull ? "Paid" : "Payment Pending";
+
+          // Optional: background for emphasis
+          doc.setDrawColor(0);
+          doc.setFillColor(order.paidInFull ? "#eafaf1" : "#fff3e0");
+          doc.rect(labelX - 2, y - 5, 60, 8, "F");
+
+          doc.text(statusText, labelX, y);
+
+          //  Footer
+          doc.setFont("helvetica", "italic");
+          doc.setTextColor(grayText);
+          doc.setFontSize(10);
+          doc.text(
+            "Thank you for your business!",
+            105,
+            280,
+            null,
+            null,
+            "center"
+          );
+
+          //  File Name
+          // Format today's date as YYYY-MM-DD
+          const today = new Date();
+          const formattedDate = today.toISOString().split("T")[0]; // e.g., "2025-08-23"
+
+          // Clean customer name
+          const safeCustomerName = (order.customerName || "Customer")
+            .replace(/\s+/g, "_")
+            .replace(/[^\w\-]/g, "");
+
+          // Save file with name like: Invoice_John_Doe_2025-08-23.pdf
+          doc.save(`Invoice_${safeCustomerName}_${formattedDate}.pdf`);
+        } catch (err) {
+          showToast("Failed to load order for printing: " + err.message);
+        }
+      }
+    </script>
+  </body>
+</html>

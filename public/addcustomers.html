@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Customer Entry</title>
+    <style>
+      :root {
+        --primary-color: #dc3545;
+        --primary-hover: #b02a37;
+        --background: #f4f6f8;
+        --input-border: #ced4da;
+        --input-focus: #007bff;
+        --container-bg: #ffffff;
+        --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        --transition-fast: 0.25s ease;
+        --transition-med: 0.4s ease;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: #333;
+        margin: 0;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background-color: var(--container-bg);
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+        box-shadow: var(--box-shadow);
+        width: 100%;
+        max-width: 100%;
+        animation: fadeIn var(--transition-med);
+        box-sizing: border-box;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #222;
+      }
+
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #333;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.6rem 0.75rem;
+        margin-top: 0.4rem;
+        border: 1.5px solid var(--input-border);
+        border-radius: 10px;
+        font-size: 1rem;
+        background: #fff;
+        color: #333;
+        transition: border-color var(--transition-fast),
+          box-shadow var(--transition-fast);
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        outline: none;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      button {
+        margin-top: 1.5rem;
+        width: 100%;
+        background-color: var(--primary-color);
+        color: #fff;
+        padding: 0.8rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color var(--transition-fast),
+          transform var(--transition-fast), box-shadow var(--transition-fast);
+        box-shadow: 0 4px 14px rgba(220, 53, 69, 0.25);
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1.5px);
+        box-shadow: 0 6px 20px rgba(176, 42, 55, 0.35);
+      }
+
+      .required {
+        color: var(--primary-color);
+        margin-left: 2px;
+      }
+
+      .toast {
+        visibility: hidden;
+        min-width: 250px;
+        background-color: #f44336;
+        color: #fff;
+        text-align: center;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      .toast.show {
+        visibility: visible;
+        animation: fadein 0.3s, fadeout 0.5s 2.5s;
+      }
+
+      .toast.success {
+        background-color: #4caf50;
+      }
+
+      @keyframes fadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeout {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      /* Large screen styles */
+      @media (min-width: 600px) {
+        .container {
+          padding: 2.5rem;
+          border-radius: 16px;
+          max-width: 540px;
+        }
+
+        h2 {
+          font-size: 1.8rem;
+          margin-bottom: 2rem;
+        }
+
+        label {
+          font-size: 1rem;
+          margin-top: 1.25rem;
+        }
+
+        input,
+        textarea,
+        select {
+          font-size: 1rem;
+          padding: 0.7rem 0.9rem;
+          margin-top: 0.5rem;
+        }
+
+        textarea {
+          min-height: 100px;
+        }
+
+        button {
+          font-size: 1.05rem;
+          padding: 0.9rem;
+          margin-top: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>New Customer Entry</h2>
+      <form id="customerForm">
+        <label for="name">Name<span class="required">*</span></label>
+        <input type="text" id="name" name="name" required />
+
+        <label for="mobile">Mobile No.<span class="required">*</span></label>
+        <input type="number" id="mobile" name="mobile" required />
+
+        <label for="date_added">Date Added</label>
+        <input type="date" id="date_added" name="date_added" required />
+
+        <!-- Can use in Future 
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="2"></textarea>
+        <label for="remarks">Remarks</label>
+        <textarea id="remarks" name="remarks" rows="2"></textarea> -->
+
+        <label for="service">Service Requested</label>
+        <select id="service" name="service">
+          <option value="General">General</option>
+          <option value="Digital Printing">Digital Printing</option>
+          <option value="N.A. Layout">N.A. Layout</option>
+          <option value="Poster Making">Poster Making</option>
+        </select>
+
+        <button type="submit">Add</button>
+      </form>
+      <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+      // Set today's date in the date picker
+      document.getElementById("date_added").valueAsDate = new Date();
+
+      // Toast Notification
+      function showToast(message, duration = 3000, type = "error") {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+          toast.className = "toast";
+        }, duration);
+      }
+
+      // Validate Input Fields
+      function validateForm(data) {
+        const namePattern = /^[a-zA-Z\s]{2,50}$/;
+        const mobilePattern = /^[6-9]\d{9}$/;
+
+        if (!data.name || !namePattern.test(data.name.trim())) {
+          showToast("Please enter a valid name (letters and spaces only).");
+          return false;
+        }
+
+        if (!data.mobile || !mobilePattern.test(data.mobile.trim())) {
+          showToast("Please enter a valid 10-digit mobile number.");
+          return false;
+        }
+
+        if (!data.date_added) {
+          showToast("Date is required.");
+          return false;
+        }
+
+        return true;
+      }
+
+      // Handle Form Submission
+      document
+        .getElementById("customerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = Object.fromEntries(new FormData(e.target).entries());
+
+          // Trim values
+          formData.name = formData.name.trim();
+          formData.mobile = formData.mobile.trim();
+
+          // Validate inputs
+          if (!validateForm(formData)) return;
+
+          try {
+            const res = await fetch(
+              `http://${window.location.hostname}:3000/api/customers/add`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(formData),
+              }
+            );
+
+            const data = await res.json();
+
+            if (data.ok) {
+              showToast("Customer added successfully!", 3000, "success");
+              e.target.reset();
+              document.getElementById("date_added").valueAsDate = new Date(); // Reset to today
+            } else {
+              showToast("Error: " + (data.error || "Unknown error"));
+            }
+          } catch (err) {
+            console.error(err);
+            showToast("Network error. Please try again later.");
+          }
+        });
+    </script>
+  </body>
+</html>

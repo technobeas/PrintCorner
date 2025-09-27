@@ -1,0 +1,245 @@
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base Styles */
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1e1e1e;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Containers */
+.container,
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  margin: 4vh auto;
+  width: 100%;
+}
+
+.container {
+  max-width: 420px;
+}
+
+.card {
+  max-width: 100%;
+}
+
+/* Headings */
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #2c2f36;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 12px 0 6px;
+  color: #333;
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ccd3e0;
+  background: #fefefe;
+  color: #222;
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4a6cff;
+  box-shadow: 0 0 0 3px rgba(74, 108, 255, 0.15);
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #4a6cff;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  background: #3a57d0;
+  box-shadow: 0 6px 12px rgba(74, 108, 255, 0.2);
+}
+
+button.secondary {
+  background: #e6eaf3;
+  color: #333;
+  border-left: 4px solid #4a6cff;
+  text-align: left;
+  padding-left: 20px;
+  width: auto;
+}
+
+button.secondary:hover {
+  background: #dce1ec;
+}
+
+/* Info Boxes */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.box {
+  background: #f8f9fc;
+  padding: 14px 16px;
+  border: 1px solid #e0e4ee;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  transition: background-color 0.2s ease;
+}
+
+.box:hover {
+  background-color: #eef1f7;
+}
+
+/* Links */
+.link {
+  color: #4a6cff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Dashboard Link Cards */
+.card-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px auto;
+  padding: 24px;
+  max-width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+/* Individual Card Links */
+.card-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  background-color: #f0f3fa;
+  border-left: 4px solid #4a6cff;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #1e1e1e;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-link:hover {
+  background-color: #e6ebf8;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+}
+
+.card-link i {
+  margin-right: 10px;
+  color: #4a6cff;
+  font-size: 18px;
+  min-width: 20px;
+}
+
+/* Password container */
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input[type="password"],
+.password-container input[type="text"] {
+  width: 100%;
+  padding-right: 30px;
+}
+
+#togglePassword {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+  font-size: 18px;
+  user-select: none;
+}
+
+/* --- MEDIA QUERIES --- */
+@media (min-width: 600px) {
+  .card {
+    max-width: 720px;
+    padding: 32px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .box {
+    font-size: 15px;
+    padding: 16px 20px;
+    border-radius: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .card-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 960px;
+    padding: 32px;
+  }
+
+  .card-link {
+    font-size: 18px;
+    padding: 28px 32px;
+    border-left: 6px solid #4a6cff;
+    border-radius: 14px;
+  }
+
+  .card-link i {
+    font-size: 20px;
+    min-width: 24px;
+  }
+}

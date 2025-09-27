@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="card">
+      <h1>Admin Dashboard</h1>
+      <div id="content" class="grid" style="margin-top: 16px">
+        <div class="box">
+          <strong>Name</strong>
+          <div id="name">-</div>
+        </div>
+        <div class="box">
+          <strong>Email</strong>
+          <div id="email">-</div>
+        </div>
+        <div class="box">
+          <strong>Role</strong>
+          <div id="role">-</div>
+        </div>
+      </div>
+      <button
+        class="secondary"
+        onclick="logout()"
+        style="margin-top: 16px; width: auto"
+      >
+        Logout
+      </button>
+    </div>
+
+    <div class="card-links">
+      <a class="card-link" href="/customerorder.html">
+        <i class="fas fa-cart-plus"></i> Add Order
+      </a>
+      <a class="card-link" href="/addcustomers.html">
+        <i class="fas fa-user-plus"></i> Add Customer
+      </a>
+      <a class="card-link" href="/balance.html">
+        <i class="fas fa-hourglass-half"></i> Pending Amount
+      </a>
+      <a class="card-link" href="/addproducts.html">
+        <i class="fas fa-box-open"></i> Add Products
+      </a>
+      <a class="card-link" href="/orderhistory.html">
+        <i class="fas fa-receipt"></i> Order History
+      </a>
+      <a class="card-link" href="/viewproducts.html">
+        <i class="fas fa-th-list"></i> View All Products
+      </a>
+      <a class="card-link" href="/viewcustomer.html">
+        <i class="fas fa-users"></i> View All Customers
+      </a>
+
+      <a class="card-link" href="/expense.html">
+        <i class="fas fa-wallet"></i> Expenses
+      </a>
+    </div>
+
+    <script src="/shared.js"></script>
+    <script>
+      (async () => {
+        const user = await getMe();
+        if (!user) return (window.location.href = "/index.html");
+        if (user.role !== "admin") return (window.location.href = "/user.html");
+        document.getElementById("name").textContent = user.name;
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("role").textContent = user.role;
+      })();
+    </script>
+  </body>
+</html>
