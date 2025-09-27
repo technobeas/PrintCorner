@@ -408,7 +408,11 @@ const sessionStore = new MySQLStore({}, pool);
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://printcorner.onrender.com"],
+    origin: [
+      "http://localhost:3000",
+      "https://printcorner.onrender.com",
+      "https://printcorner.onrender.com/index.html",
+    ],
     credentials: true,
   })
 );
