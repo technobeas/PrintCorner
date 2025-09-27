@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN (admin or user) with session regeneration
-router.post("/login", async (req, res) => {
+router.post("/index", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
