@@ -261,7 +261,7 @@
 
           try {
             const res = await fetch(
-              `https://${window.location.hostname}:3000/api/products`,
+              `https://printcorner.onrender.com/api/products`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -333,7 +333,7 @@
                 if (!name || isNaN(price)) continue;
 
                 const res = await fetch(
-                  `https://${window.location.hostname}:3000/api/products`,
+                  `https://printcorner.onrender.com/api/products`,
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

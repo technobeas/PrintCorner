@@ -118,16 +118,16 @@
         color: var(--color-text);
         vertical-align: middle;
         max-width: 220px;
-        word-break: normal; 
-        white-space: nowrap; 
+        word-break: normal;
+        white-space: nowrap;
         overflow-wrap: normal;
       }
 
       tbody td.mobile,
       tbody td:last-child {
-        white-space: normal; 
+        white-space: normal;
         word-break: break-word;
-        max-width: 120px; 
+        max-width: 120px;
       }
 
       tbody td:last-child {
@@ -140,7 +140,7 @@
       .delete-btn {
         background-color: var(--color-danger-bg);
         color: var(--color-danger-text);
-        padding: 8px 20px; 
+        padding: 8px 20px;
         border-radius: var(--border-radius);
         font-weight: 700;
         cursor: pointer;
@@ -150,7 +150,7 @@
           color var(--transition-speed) ease;
         user-select: none;
         font-size: 0.9rem;
-        white-space: nowrap; 
+        white-space: nowrap;
       }
 
       .delete-btn:hover {
@@ -190,7 +190,7 @@
         }
 
         tbody td {
-          display: block; 
+          display: block;
           padding: 0.5rem 0;
           border-bottom: 1px solid #eee;
           font-size: 1.1rem;
@@ -203,7 +203,7 @@
           content: attr(data-label);
           font-weight: 700;
           color: var(--color-text-secondary);
-          display: block; 
+          display: block;
           margin-bottom: 0.3rem;
           text-transform: capitalize;
         }
@@ -217,7 +217,7 @@
         }
 
         tbody td:last-child .delete-btn {
-          order: -1; 
+          order: -1;
           padding: 8px 20px;
           font-size: 1rem;
           border-radius: var(--border-radius);
@@ -380,7 +380,7 @@
         async function fetchCustomers() {
           try {
             const res = await fetch(
-              `https://${window.location.hostname}:3000/api/customers/view`,
+              `https://printcorner.onrender.com/api/customers/view`,
               {
                 credentials: "include",
               }
@@ -472,7 +472,7 @@
 
                 try {
                   const res = await fetch(
-                    `https://${window.location.hostname}:3000/api/customers/${id}`,
+                    `https://printcorner.onrender.com/api/customers/${id}`,
                     {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
@@ -518,10 +518,9 @@
           );
           if (!confirmed) return;
 
-          
           try {
             const res = await fetch(
-              `https://${window.location.hostname}:3000/api/customers/${id}`,
+              `https://printcorner.onrender.com/api/customers/${id}`,
               {
                 method: "DELETE",
                 credentials: "include",

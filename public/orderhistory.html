@@ -305,7 +305,7 @@
         }
 
         const url = new URL(
-          `https://${window.location.hostname}:3000/api/orders`
+          `https://printcorner.onrender.com/api/orders`
         );
 
         if (mobile) url.searchParams.append("mobile", mobile);
@@ -403,7 +403,7 @@
       async function printBill(orderId) {
         try {
           const res = await fetch(
-            `https://${window.location.hostname}:3000/api/orders/${orderId}`,
+            `https://printcorner.onrender.com/api/orders/${orderId}`,
             { credentials: "include" }
           );
           if (!res.ok) throw new Error("Order not found");

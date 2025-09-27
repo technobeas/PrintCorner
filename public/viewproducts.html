@@ -522,7 +522,7 @@
         try {
           statusMsg.textContent = "Loading products...";
           const res = await fetch(
-            `https://${window.location.hostname}:3000/api/products/all`,
+            `https://printcorner.onrender.com/api/products/all`,
             {
               credentials: "include",
             }
@@ -621,7 +621,7 @@
               updateData[field] = newValue;
 
               const response = await fetch(
-                `https://${window.location.hostname}:3000/api/products/${id}`,
+                `https://printcorner.onrender.com/api/products/${id}`,
                 {
                   method: "PATCH",
                   headers: {

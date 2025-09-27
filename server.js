@@ -487,7 +487,8 @@ async function startServer() {
     await ensureAdmin();
 
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Visit your app URL (not localhost) to access the server`);
     });
   } catch (err) {
     console.error("❌ Could not start server due to DB error:", err);

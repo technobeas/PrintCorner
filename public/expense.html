@@ -430,7 +430,7 @@ function showConfirm(message) {
         try {
           // Fetch expenses
           const expensesRes = await fetch(
-            `https://${window.location.hostname}:3000/api/expenses?start=${start}&end=${end}` ,
+            `https://printcorner.onrender.com/api/expenses?start=${start}&end=${end}` ,
             {
               credentials: "include",
             }
@@ -442,7 +442,7 @@ function showConfirm(message) {
 
           // Fetch total earnings
           const earningsRes = await fetch(
-            `https://${window.location.hostname}:3000/api/expenses/orders/total?start=${start}&end=${end}` ,
+            `https://printcorner.onrender.com/api/expenses/orders/total?start=${start}&end=${end}` ,
             {
               credentials: "include",
             }
@@ -494,7 +494,7 @@ function showConfirm(message) {
         }
 
         try {
-          const response = await fetch(`https://${window.location.hostname}:3000/api/expenses`, {
+          const response = await fetch(`https://printcorner.onrender.com/api/expenses`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
@@ -539,7 +539,7 @@ if (!confirmed) {
 }
 
     try {
-      const response = await fetch(`https://${window.location.hostname}:3000/api/expenses/${id}`, {
+      const response = await fetch(`https://printcorner.onrender.com/api/expenses/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
