@@ -437,23 +437,6 @@ app.use("/api/products", productsRoutes);
 app.use("/api/customers", customersRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/expenses", expensesRoutes);
-app.use("/api", authRoutes);
-
-// Serve static files
-app.use(express.static(path.join(__dirname, "public")));
-
-// Route fallbacks
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/admin.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
-});
-
-app.get("/user.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "user.html"));
-});
 
 // Ensure admin user exists or is reset to env config
 async function ensureAdmin() {
@@ -483,6 +466,23 @@ async function ensureAdmin() {
     console.log("Admin user seeded/updated:", adminEmail);
   }
 }
+
+app.use("/api", authRoutes);
+// Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+
+// Route fallbacks
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/admin.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "admin.html"));
+});
+
+app.get("/user.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "user.html"));
+});
 
 // Start the server with DB connection test & admin setup
 async function startServer() {
