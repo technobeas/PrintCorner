@@ -277,7 +277,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Create MySQL session store with your pool's promise wrapper
-const sessionStore = new MySQLStore({}, pool.promise());
+// const sessionStore = new MySQLStore({}, pool.promise());
+const sessionStore = new MySQLStore({}, pool);
 
 app.use(
   session({
